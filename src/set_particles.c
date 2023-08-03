@@ -89,7 +89,7 @@ void initialize_particles(void) {
       P[n].RecalcFlag = 1;
 
 
-		if(P[n].Type == 1) {
+		if(P[n].Type == 1 && All.HaloUseTable == 0) {
 			
 			// generate a realization in VelTheo[] with the exact spherically symmetric, isotropic Hernquist distribution function, for comparison 
 		

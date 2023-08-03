@@ -345,7 +345,7 @@ void forcedensitygrid_create(void) {
 
 	else DG_Rin = halo_mass_to_radius(fac*All.Halo_Mass);
 
-	mpi_printf("Rin  = %g  (radius that encloses a fraction %g of the Hernquist halo)\n", DG_Rin, fac);
+	mpi_printf("Rin  = %g  (radius that encloses a fraction %g of the halo)\n", DG_Rin, fac);
 
 
 	/* we put DG_Nbin per dimension for the density grid, ibin=[0,...,Nbin-1]
