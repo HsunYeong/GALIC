@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-GALIC -- modifed version 
+GALIC -- modifed version
 ------------------------------------------------------------------------
 
   This is the modified version of the GALIC code (http://www.h-its.org/tap/galic)
@@ -8,7 +8,7 @@ GALIC -- modifed version
 
   Heidelberg Institute for Theoretical Studies (HITS)
   Schloss-Wolfsbrunnenweg 35, 69118 Heidelberg, Germany,
-  
+
   Heidelberg University, Zentrum fuer Astronomy, ARI
   Moenchhofstrasse 12-14, 69120 Heidelberg, Germany
 
@@ -19,7 +19,7 @@ GALIC -- modifed version
   The method is described in full in the paper
 
   Yurin D., Springel, V., 2014, MNRAS, in press
-  (see also the preprin at http://arxiv.org/abs/1402.1623) 
+  (see also the preprin at http://arxiv.org/abs/1402.1623)
 
   Users of the code are kindly asked to cite the paper if they make
   use of the code. The code is released "as is", without any guarantees
@@ -71,13 +71,13 @@ Parameterfile
   parameter-value pair. The sequence of the parameters is arbitrary,
   and comment lines are also allowed. The code will complain about
   missing or duplicate parameters. "disk-heating.param" serves as an example
-   
+
 -------------
 Profile Table
 -------------
-  
+
    The modified GALIC can construct the halo via spherically symmetric halo profile
-   An example is "profile_example.txt", which is the profile of m_{22}=0.4, M_h=7.0e10 Msun FDM halo. 
+   An example is "profile_example.txt", which is the profile of m_{22}=0.4, M_h=7.0e10 Msun FDM halo.
 
    Qauntities needed:
    1) radius (in kpc)
@@ -105,7 +105,7 @@ Output
   http://www.mpa-garching.mpg.de/gadget/users-guide.pdf
 
 -------
-Restart 
+Restart
 -------
 
   The general usage of GALIC is in fact quite similar to the GADGET

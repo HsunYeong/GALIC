@@ -39,7 +39,7 @@ int force_treeevaluate(int i, int mode, int thread_id)
 	{
 	  terminate("target >= NumPart");
 	}
-	
+
       numnodes = 1;
     }
   else
@@ -48,7 +48,7 @@ int force_treeevaluate(int i, int mode, int thread_id)
       pos_x = GravDataGet[target].Pos[0];
       pos_y = GravDataGet[target].Pos[1];
       pos_z = GravDataGet[target].Pos[2];
-  
+
       if(target == Nimport - 1)
         numnodes = NimportNodes - GravDataGet[target].Firstnode;
       else

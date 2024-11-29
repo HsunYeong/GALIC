@@ -320,7 +320,7 @@ void read_parameter_file(char *fname)
       addr[nt] = &All.GravityConstantInternal;
       id[nt++] = REAL;
 
-      #ifdef VER_1_1	
+      #ifdef VER_1_1
       strcpy(tag[nt], "HaloValueRsFac");
       addr[nt] = &fac_value_rs[1];
       id[nt++] = REAL;
@@ -332,12 +332,12 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "HaloValueQsFac");
       addr[nt] = &fac_value_qs[1];
       id[nt++] = REAL;
-		
+
       strcpy(tag[nt], "HaloValuePsFac");
       addr[nt] = &fac_value_ps[1];
       id[nt++] = REAL;
-		
-		
+
+
       strcpy(tag[nt], "DiskValueRsFac");
       addr[nt] = &fac_value_rs[2];
       id[nt++] = REAL;
@@ -349,12 +349,12 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "DiskValueQsFac");
       addr[nt] = &fac_value_qs[2];
       id[nt++] = REAL;
-		
+
       strcpy(tag[nt], "DiskValuePsFac");
       addr[nt] = &fac_value_ps[2];
       id[nt++] = REAL;
-		
-		
+
+
       strcpy(tag[nt], "BulgeValueRsFac");
       addr[nt] = &fac_value_rs[3];
       id[nt++] = REAL;
@@ -366,13 +366,13 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "BulgeValueQsFac");
       addr[nt] = &fac_value_qs[3];
       id[nt++] = REAL;
-		
+
       strcpy(tag[nt], "BulgeValuePsFac");
       addr[nt] = &fac_value_ps[3];
       id[nt++] = REAL;
       #endif
-		
-		
+
+
       if((fd = fopen(fname, "r")))
 	{
 	  sprintf(buf, "%s%s", fname, "-usedvalues");
@@ -484,7 +484,7 @@ void read_parameter_file(char *fname)
   MPI_Bcast(&DG_MaxLevel, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
   MPI_Bcast(&FG_Nbin, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
   MPI_Bcast(&EG_MaxLevel, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
-  
+ 
   #ifdef VER_1_1
 	MPI_Bcast(fac_value_rs, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
 	MPI_Bcast(fac_value_ts, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);

@@ -2,7 +2,7 @@
 # This file is part of the GALIC code developed by D. Yurin and V. Springel.
 #
 # Copyright (c) 2014
-# Denis Yurin (denis.yurin@h-its.org) 
+# Denis Yurin (denis.yurin@h-its.org)
 # Volker Springel (volker.springel@h-its.org)
 #*******************************************************************************
 #!/bin/bash            # this line only there to enable syntax highlighting in this file

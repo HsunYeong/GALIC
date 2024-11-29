@@ -22,16 +22,16 @@
  *  blocks as in a stack structure. The blocks are automatically aligned to a 64 bit boundary.
  *  Memory blocks come in two flavours: movable and non-movable. In non-movable
  *  blocks the starting address is fixed once the block is allocated and cannot be changed.
- *  Due to the stack structure of the dynamic memory, this implies that the last (non-movable) 
+ *  Due to the stack structure of the dynamic memory, this implies that the last (non-movable)
  *  block allocated must be the first block to be deallocated. If this condition is not met,
  *  an abort condition is triggered. If more flexibility is needed, movable memory blocks can
  *  be used. In this case, the starting address of the block is again fixed upon allocation
  *  but the block can be shifted (therefore its initial address changes) according to needs.
  *  For a movable block to be successfully shifted it is required that all the subsequent allocated
  *  blocks are movable. Again, an abort condition is triggered if this condition is not met.
- *  Movable blocks can be deallocated in any order provided that the condition just described holds. 
- *  The gap resulting form the deallocation of a block that is not in 
- *  the last position will be automatically filled by shifting all the blocks coming after the 
+ *  Movable blocks can be deallocated in any order provided that the condition just described holds.
+ *  The gap resulting form the deallocation of a block that is not in
+ *  the last position will be automatically filled by shifting all the blocks coming after the
  *  deallocated block.
  */
 
@@ -97,7 +97,7 @@ void mymalloc_init(void)
            output is done
  *  \param label contains the neme of the code module which requested the memory report (e.g. RUN, ...)
  *  \param func name of function that has requested the memory usage report (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has requested the memory usage report resides (usually given by the __FILE__ macro) 
+ *  \param file file where the function that has requested the memory usage report resides (usually given by the __FILE__ macro)
  *  \param line line number of file where the function that has requested the memory usage was called (usually given by the __LINE__ macro)
  */
 void report_detailed_memory_usage_of_largest_task(size_t * OldHighMarkBytes, const char *label,
@@ -240,8 +240,8 @@ int dump_memory_table_buffer(char *p)
  *  \param varname name of the variable to be stored in the allocated block
  *  \param n size of the memory block in bytes
  *  \param func name of function that has called the allocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the allocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the allocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the allocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the allocation routine was called (usually given by the __LINE__ macro)
  *  \return a pointer to the beginning of the allocated memory block
  */
 void *mymalloc_fullinfo(const char *varname, size_t n, const char *func, const char *file, int line)
@@ -297,8 +297,8 @@ void *mymalloc_fullinfo(const char *varname, size_t n, const char *func, const c
  *  \param varname name of the variable to be stored in the allocated block
  *  \param n size of the memory block in bytes
  *  \param func name of function that has called the allocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the allocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the allocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the allocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the allocation routine was called (usually given by the __LINE__ macro)
  *  \return a pointer to the beginning of the allocated memory block
  */
 void *mymalloc_movable_fullinfo(void *ptr, const char *varname, size_t n, const char *func, const char *file,
@@ -357,8 +357,8 @@ void *mymalloc_movable_fullinfo(void *ptr, const char *varname, size_t n, const 
  *
  *  \param p pointer to the memory block to be deallocated
  *  \param func name of function that has called the deallocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the deallocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the deallocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the deallocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the deallocation routine was called (usually given by the __LINE__ macro)
  */
 void myfree_fullinfo(void *p, const char *func, const char *file, int line)
 {
@@ -391,8 +391,8 @@ void myfree_fullinfo(void *p, const char *func, const char *file, int line)
  *
  *  \param p pointer to the memory block to be deallocated
  *  \param func name of function that has called the deallocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the deallocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the deallocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the deallocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the deallocation routine was called (usually given by the __LINE__ macro)
  */
 void myfree_movable_fullinfo(void *p, const char *func, const char *file, int line)
 {
@@ -481,8 +481,8 @@ void myfree_movable_fullinfo(void *p, const char *func, const char *file, int li
  *  \param p pointer to the existing memory block to be reallocated
  *  \param n the new size of the memory block in bytes
  *  \param func name of function that has called the reallocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the reallocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the reallocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the reallocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the reallocation routine was called (usually given by the __LINE__ macro)
  *  \return a pointer to the beginning of the newly allocated memory block
  */
 void *myrealloc_fullinfo(void *p, size_t n, const char *func, const char *file, int line)
@@ -541,8 +541,8 @@ void *myrealloc_fullinfo(void *p, size_t n, const char *func, const char *file, 
  *  \param p pointer to the existing memory block to be reallocated
  *  \param n the new size of the memory block in bytes
  *  \param func name of function that has called the reallocation routine (usually given by the __FUNCTION__ macro)
- *  \param file file where the function that has called the reallocation routine resides (usually given by the __FILE__ macro) 
- *  \param line line number of file where the reallocation routine was called (usually given by the __LINE__ macro) 
+ *  \param file file where the function that has called the reallocation routine resides (usually given by the __FILE__ macro)
+ *  \param line line number of file where the reallocation routine was called (usually given by the __LINE__ macro)
  *  \return a pointer to the beginning of the newly allocated memory block
  */
 void *myrealloc_movable_fullinfo(void *p, size_t n, const char *func, const char *file, int line)

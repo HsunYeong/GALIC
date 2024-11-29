@@ -1,4 +1,4 @@
-# Select Target Computer 
+# Select Target Computer
 #
 # Please copy this file to Makefile.systype and uncomment your
 # system. Don't commit changes to this file unless you add support for
@@ -29,7 +29,7 @@
 #SYSTYPE="Odin"
 #SYSTYPE="OpteronMPA-Gnu"
 #SYSTYPE="OpteronMPA-Intel"
-#SYSTYPE="MPA"	
+#SYSTYPE="MPA"
 #SYSTYPE="VIP"
 #SYSTYPE="odyssey"
 #SYSTYPE="odyssey-intel"

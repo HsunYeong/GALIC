@@ -9,7 +9,7 @@
 
 
 double get_density_of_type(double *pos, int type) {
-	
+
   if(type == 1)
     return halo_get_density(pos);
   else if(type == 2)
@@ -20,11 +20,11 @@ double get_density_of_type(double *pos, int type) {
     terminate("unknown type");
 
   return 0;
-  
+
 }
 
 double get_beta_of_type(double *pos, int type) {
-	
+
   double beta = 0;
 
   if(type == 1)
@@ -58,7 +58,7 @@ double get_beta_of_type(double *pos, int type) {
     terminate("unknown type");
 
   return beta;
-  
+
 }
 
 
@@ -107,7 +107,7 @@ void get_disp_rtp(double *pos, int type, double *disp_r, double *disp_t, double 
 
       double vstr = get_vstream(pos, type);
        *disp_q = (*disp_p) + vstr * vstr;
-		 
+
 		// if (ThisTask==0) printf("disp_q = %10g, disp_p = %10g, vstr = %10g\n", sqrt(*disp_q), sqrt(*disp_p), vstr);
      }
   else
@@ -198,7 +198,7 @@ double get_theta_disp_tilted(double *pos, int type)
  * the relevant 'radial' and 'tangential' velocity components squared
  */
 void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *vt2, double *vp2, double *vq2) {
-	
+
 	int type = P[n].Type;
 	int typeOfVelocityStructure;
 
@@ -212,7 +212,7 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		terminate("unknown type");
 
 	if (typeOfVelocityStructure == 0 || typeOfVelocityStructure == 1 || typeOfVelocityStructure == 3) {
-		
+
 		double phi = atan2(P[n].Pos[1], P[n].Pos[0]);
 		double theta = acos(P[n].Pos[2] / sqrt(P[n].Pos[0] * P[n].Pos[0] + P[n].Pos[1] * P[n].Pos[1] + P[n].Pos[2] * P[n].Pos[2]));
 		double er[3], ePhi[3], eTheta[3];
@@ -228,12 +228,12 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		eTheta[0] = -cos(theta) * cos(phi);
 		eTheta[1] = -cos(theta) * sin(phi);
 		eTheta[2] = sin(theta);
-		
+
 		double vr = vel[0] * er[0] + vel[1] * er[1] + vel[2] * er[2];
 		double vphi = vel[0] * ePhi[0] + vel[1] * ePhi[1] + vel[2] * ePhi[2];
 		double vtheta = vel[0] * eTheta[0] + vel[1] * eTheta[1] + vel[2] * eTheta[2];
 
-		
+
 		double vstr = 0;
 
 		if (typeOfVelocityStructure == 1 || typeOfVelocityStructure == 3) vstr = get_vstream(P[n].Pos, type);
@@ -242,7 +242,7 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		*vt2 = vtheta * vtheta;
 		*vp2 = (vphi - vstr) * (vphi - vstr);
 		*vq2 = vphi * vphi;
-		
+
 		/*
 		{
 		double r2, v_dot_x, _vr2;
@@ -251,10 +251,10 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		double q, q2, vq, _vq2, v_dot_Q;
 		double t2, _vt2, v_dot_T;
 		double vstr, _vp2;
-	
+
 		double *x = P[n].Pos;
 		double *v = vel;
-		
+
 		// radial
 		r2 = x[0] * x[0] + x[1] * x[1] + x[2] * x[2];
 		v_dot_x = v[0] * x[0] + v[1] * x[1] + v[2] * x[2];
@@ -264,23 +264,23 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		Q[0] = x[1]*Z[2] - x[2]*Z[1];
 		Q[1] = x[2]*Z[0] - x[0]*Z[2];
 		Q[2] = x[0]*Z[1] - x[1]*Z[0];
-		
+
 		//Q[0] = Z[1]*x[2] - Z[2]*x[1];
 		//Q[1] = Z[2]*x[0] - Z[0]*x[2];
-		//Q[2] = Z[0]*x[1] - Z[1]*x[0];		
-		
+		//Q[2] = Z[0]*x[1] - Z[1]*x[0];
+
 		q2 = Q[0]*Q[0] + Q[1]*Q[1] + Q[2]*Q[2];
 		v_dot_Q = v[0]*Q[0] + v[1]*Q[1] + v[2]*Q[2];
 		q = sqrt(q2);
 		vq = v_dot_Q / q;
 		_vq2 = vq*vq;
-		
+
 		// phi - vstr
 		vstr = get_vstream(x, type);
 		_vp2 = (vq-vstr)*(vq-vstr);
 		//if (ThisTask==0) printf("vq = %10g, vstr = %10g\n", vq, vstr);
-		
-		
+
+
 		// theta
 		T[0] = x[1]*Q[2] - x[2]*Q[1];
 		T[1] = x[2]*Q[0] - x[0]*Q[2];
@@ -288,15 +288,15 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		t2 = T[0]*T[0] + T[1]*T[1] + T[2]*T[2];
 		v_dot_T = v[0]*T[0] + v[1]*T[1] + v[2]*T[2];
 		_vt2 = v_dot_T * v_dot_T / t2;
-		
+
 		if (ThisTask==0) printf("vr2 = %11g %11g  | vt2 = %11g %11g | vq2 = %11g %11g | vp2 = %11g %11g \n", *vr2, _vr2, *vt2, _vt2, *vq2, _vq2, *vp2, _vp2);
-		
+
 		}
 		*/
-		
-		
+
+
 	} else if(typeOfVelocityStructure == 2) {
-		
+
 		double phi = atan2(P[n].Pos[1], P[n].Pos[0]);
 		double eR[3], ePhi[3], eZ[3];
 
@@ -322,7 +322,7 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		*vt2 = vZ * vZ;
 		*vp2 = (vphi - vstr) * (vphi - vstr);
 		*vq2 = vphi * vphi;
-		
+
 		/*
 		{
 		double r2, v_dot_r, _vr2;
@@ -331,49 +331,49 @@ void calc_disp_components_for_particle(int n, double *vel, double *vr2, double *
 		double q, q2, vq, _vq2, v_dot_Q;
 		double t2, _vt2, v_dot_T;
 		double vstr, _vp2;
-	
+
 		double *x = P[n].Pos;
 		double *v = vel;
-		
-		
+
+
 		double R[] = { x[0], x[1], 0 };
-		
+
 		// radial
 		r2 = R[0]*R[0] + R[1]*R[1];
 		v_dot_r = v[0]*R[0] + v[1]*R[1];
-		
+
 		_vr2 = v_dot_r * v_dot_r / r2;
 
 		// phi
 		Q[0] = -R[1];
 		Q[1] =  R[0];
 		Q[2] =  R[2];
-		
+
 		q2 = Q[0]*Q[0] + Q[1]*Q[1];
 		v_dot_Q = v[0]*Q[0] + v[1]*Q[1];
 		q = sqrt(q2);
 		vq = v_dot_Q / q;
 		_vq2 = vq*vq;
-		
+
 		// phi - vstr
 		vstr = get_vstream(x, type);
 		_vp2 = (vq-vstr)*(vq-vstr);
-		
+
 		// theta
 		_vt2 = v[2]*v[2];
-		
+
 		if (ThisTask==0) printf("vr2 = %11g %11g  | vt2 = %11g %11g | vq2 = %11g %11g | vp2 = %11g %11g \n", *vr2, _vr2, *vt2, _vt2, *vq2, _vq2, *vp2, _vp2);
 		}
 		*/
-		
-		
-			
+
+
+
 	}
 }
 
 
 double get_radial_disp_spherical(double *pos, int type) {
-	
+
 	double r = sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]);
 	double br = (log(r / FG_Rmin + 1.0) / log(FG_Fac));
 	int binr;
@@ -437,18 +437,18 @@ double integrate_axisymmetric_jeans(double zstart, double zend, double R, int ty
       double pos0[3] = {R, 0, z0};
       double pos1[3] = {R, 0, z1};
       double acc0[3], acc1[3];
-      
+
       forcegrid_get_acceleration(pos0, acc0);
       double y0 = -acc0[2] * get_density_of_type(pos0, type);
 
       forcegrid_get_acceleration(pos1, acc1);
       double y1 = -acc1[2] * get_density_of_type(pos1, type);
-		
+
 		acc+=acc1[2];
-      
+
       sum += 0.5 * (y0 + y1) * dz;
     }
-    
+
   return sum;
 }
 
@@ -500,7 +500,7 @@ double integrate_spherical_jeans_beta(int type, double ystart, double rstart, do
 
 
 void calculate_dispfield(void) {
-	
+
 	int i, j, k, type;
 	struct int_parameters par;
 
@@ -508,10 +508,10 @@ void calculate_dispfield(void) {
 
 	mpi_printf("\nCalculating velocity dispersion fields...\n");
 
-	
-	// purely radial case first (only useful for TypeOf-VelocityStructure = 0 or 1) 
+
+	// purely radial case first (only useful for TypeOf-VelocityStructure = 0 or 1)
 	for(type = 1; type <= 3; type++) {
-		
+
 		if(type == 1 && All.Halo_N == 0) continue;
 		if(type == 2 && All.Disk_N == 0) continue;
 		if(type == 3 && All.Bulge_N == 0) continue;
@@ -522,7 +522,7 @@ void calculate_dispfield(void) {
 		double y = integrate_spherical_jeans_beta(type, 0.0, r2, r1);
 
 		for(j = FG_Nbin - 1; j >= 0; j--) {
-			
+
 			r1 = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 			r2 = FG_Rmin * (pow(FG_Fac, j + 1) - 1.0);
 
@@ -532,7 +532,7 @@ void calculate_dispfield(void) {
 		}
 
 		for(j = FG_Nbin - 1; j >= 0; j--) {
-			
+
 			r1 = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 
 			double pos[3];
@@ -545,17 +545,17 @@ void calculate_dispfield(void) {
 				FG_Disp_r[type][j] /= dens;
 			else
 				FG_Disp_r[type][j]  = 0;
-			
+
 		}
 
-		// now we output the result 
+		// now we output the result
 		if (ThisTask == 0) {
-			
+
 			char buf[1000];
 			sprintf(buf, "%s/sigma_r_%d.txt", All.OutputDir, type);
 			FILE *fd = fopen(buf, "w");
 			fprintf(fd, "%d\n", FG_Nbin);
-			
+
 			for(j = 0; j < FG_Nbin; j++) {
 				r1 = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 				double pos[3];
@@ -564,17 +564,17 @@ void calculate_dispfield(void) {
 				pos[2] = 0;
 				fprintf(fd, "%g    %g    %g\n", r1, FG_Disp_r[type][j], get_beta_of_type(pos, type));
 			}
-			
+
 			fclose(fd);
 		}
-		
+
 	}
-	
 
 
-	// now do the simple axisymmetric f(E,Lz) case  (useful for TypeOf-VelocityStructure = 2) 
+
+	// now do the simple axisymmetric f(E,Lz) case  (useful for TypeOf-VelocityStructure = 2)
 	for(type = 1; type <= 3; type++) {
-		
+
 		if(type == 1 && All.Halo_N == 0) continue;
 		if(type == 2 && All.Disk_N == 0) continue;
 		if(type == 3 && All.Bulge_N == 0) continue;
@@ -589,7 +589,7 @@ void calculate_dispfield(void) {
 			kParameter = All.BulgeStreamingVelocityParameter;
 
 		for(j = 0; j < FG_Nbin; j++) {
-			
+
 			double R = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 			double z1, z2;
 
@@ -602,12 +602,12 @@ void calculate_dispfield(void) {
 			double integ = integrate_axisymmetric_jeans(z1, FG_Rmin * (pow(FG_Fac, 2 * FG_Nbin) - 1.0), R, type);
 
 			for(k = FG_Nbin - 1; k >= 0; k--) {
-				
+
 				i = k * FG_Nbin + j;	/* r,z */
 
 				z1 = FG_Rmin * (pow(FG_Fac, k) - 1.0);
 				z2 = FG_Rmin * (pow(FG_Fac, k + 1) - 1.0);
-					
+
 				integ += integrate_axisymmetric_jeans(z1, z2, R, type);
 
 				double pos[3];
@@ -624,10 +624,10 @@ void calculate_dispfield(void) {
 		}
 
 
-		// now calculate streaming velocity through axisymmetric Jeans equations 
+		// now calculate streaming velocity through axisymmetric Jeans equations
 		for(k = FG_Nbin - 1; k >= 0; k--)
 		for(j = 0; j < FG_Nbin; j++) {
-			
+
 			double z = FG_Rmin * (pow(FG_Fac, k) - 1.0);
 			double R = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 			double pos[3], acc[3], R1, R2;
@@ -688,7 +688,7 @@ void calculate_dispfield(void) {
 				if(Vphi2 >= FG_DispZ[type][i])
 					vstr = kParameter * sqrt((Vphi2 - FG_DispZ[type][i]));
 
-					
+
 				FG_DispPhi[type][i] = Vphi2 - vstr * vstr;
 				FG_Vstream[type][i] = vstr;
 			} else {
@@ -696,9 +696,9 @@ void calculate_dispfield(void) {
 				FG_Vstream[type][i] = 0;
 			}
 		}
-			
+
 		if(ThisTask == 0) {
-			
+
 			double *tmpR = mymalloc("tmpR", FG_Ngrid * sizeof(double));
 			double *tmpz = mymalloc("tmpz", FG_Ngrid * sizeof(double));
 
@@ -728,12 +728,12 @@ void calculate_dispfield(void) {
 		}
 	}
 
-	
-	
-	
+
+
+
 	// now do the more difficult  axisymmetic f(E,Lz,I3) case  (useful for TypeOf-VelocityStructure = 3)
 	for(type = 1; type <= 3; type++) {
-		
+
 		if(type == 1 && All.Halo_N == 0) continue;
 		if(type == 2 && All.Disk_N == 0) continue;
 		if(type == 3 && All.Bulge_N == 0) continue;
@@ -781,10 +781,10 @@ void calculate_dispfield(void) {
 
 			double dz = (z1 - z0);
 			int nsteps = 100, st;
-	
+
 			for(j = 0; j < FG_Nbin; j++)
 				qprev[j] = FG_q[AA(k+1,j)];
-	
+
 			for(st = 0; st < nsteps; st++)
 			{
 			double z = z0 + (dz / nsteps)*st;
@@ -812,12 +812,12 @@ void calculate_dispfield(void) {
 					{
 						double R2 = FG_Rmin * (pow(FG_Fac, j+1) - 1.0);
 						double h2 = h_factor(R2, z, type);
-						
+
 						double dR = R2 - R1;
-						
+
 						dqdR = (h2*qprev[j+1] - h1*qprev[j]) / (dR)  +  qprev[j] * h_over_R(R1, z, type);
 					}
-				
+
 				FG_q[AA(k,j)] = qprev[j]  + ( - p - dqdR) * (dz / nsteps);
 				}
 					else
@@ -826,25 +826,25 @@ void calculate_dispfield(void) {
 					{
 						double R2 = FG_Rmin * (pow(FG_Fac, j+1) - 1.0);
 						double h2 = h_factor(R2, z, type);
-						
+
 						double dR = R2 - R1;
-						
+
 						dqdR = (h2*qprev[j+1] - h1*qprev[j]) / (dR)  +  qprev[j] * h_over_R(R1, z, type);
 					}
 				else
 					{
 						double R2 = FG_Rmin * (pow(FG_Fac, j-1) - 1.0);
 						double h2 = h_factor(R2, z, type);
-						
+
 						double dR = R2 - R1;
-					
+
 						dqdR = (h2*qprev[j-1] - h1*qprev[j]) / (dR)  +  qprev[j] * h_over_R(R1, z, type);
 					}
-				
+
 				FG_q[AA(k,j)] = qprev[j]  + ( - p - dqdR) * (dz / nsteps);
 				}
 				}
-	
+
 			for(j = 0; j < FG_Nbin; j++)
 				qprev[j] = FG_q[AA(k,j)];
 			}
@@ -905,10 +905,10 @@ void calculate_dispfield(void) {
 		}
 
 
-		// now calculate streaming velocity through axisymmetric Jeans equations 
+		// now calculate streaming velocity through axisymmetric Jeans equations
 		for(k = FG_Nbin - 1; k >= 0; k--)
 		for(j = 0; j < FG_Nbin; j++) {
-			
+
 			double z = FG_Rmin * (pow(FG_Fac, k) - 1.0);
 			double R = FG_Rmin * (pow(FG_Fac, j) - 1.0);
 			double pos[3], acc[3], R2;
@@ -922,35 +922,35 @@ void calculate_dispfield(void) {
 			forcegrid_get_acceleration(pos, acc);
 
 			i = k * FG_Nbin + j;	/* r,z */
-				
+
 			double Vphi2 = 0;
 
 			if (dens > 0) {
-				
+
 #ifdef VER_1_1
 				int j1 = (0 < j ?  j-1 : j);
 				int j2 = (j < FG_Nbin-1 ?  j+1 : j);
-				
+
 				int i1 = k * FG_Nbin + j1;
 				int i2 = k * FG_Nbin + j2;
-				
+
 				double R1 = FG_Rmin * (pow(FG_Fac, j1) - 1.0);
 				double R2 = FG_Rmin * (pow(FG_Fac, j2) - 1.0);
-				
-				
+
+
 				pos[0] = R1;
 				double dens1 = get_density_of_type(pos, type);
-				
+
 				pos[0] = R2;
 				double dens2 = get_density_of_type(pos, type);
-				
+
 				Vphi2 = FG_tilted_vR2[type][i] +
 				R / dens * (dens2 * FG_tilted_vR2[type][i2] - dens1 * FG_tilted_vR2[type][i1]) / (R2 -  R1) +
 				R * (-acc[0]) +
 				R / dens * (dens2 * h_factor(R2, z, type) * FG_tilted_vz2[type][i2] - dens1 * h_factor(R1, z, type) * FG_tilted_vz2[type][i1]) / (R2 - R1);
 				/**/
-#else				
-				 	
+#else
+
 				if(j < FG_Nbin - 1) {
 					R2 = FG_Rmin * (pow(FG_Fac, j + 1) - 1.0);
 					i2 = k * FG_Nbin + j + 1;
@@ -961,28 +961,28 @@ void calculate_dispfield(void) {
 
 				pos[0] = R2;
 				double dens2 = get_density_of_type(pos, type);
-				 
+
 				Vphi2 = FG_tilted_vR2[type][i] + R * (-acc[0]) +
 					R / dens * (dens2 * FG_tilted_vR2[type][i2] - dens * FG_tilted_vR2[type][i]) / (R2 -  R) +
-					R / dens * (dens2 * h_factor(R2, z, type) * FG_tilted_vz2[type][i2] - dens * h_factor(R, z, type) * FG_tilted_vz2[type][i]) / (R2 -  R);	
+					R / dens * (dens2 * h_factor(R2, z, type) * FG_tilted_vz2[type][i2] - dens * h_factor(R, z, type) * FG_tilted_vz2[type][i]) / (R2 -  R);
 				/**/
-#endif				
+#endif
 			}
-			
+
 			/*
-			// Peter & Matteo 2017.06.02 
+			// Peter & Matteo 2017.06.02
 			if(dens > 0)
 				if(R > 8.0) {
 					kParameter = (Vphi2 - 0.5*FG_tilted_vR2[type][i]) / (Vphi2 - FG_tilted_vR2[type][i]);
-						
+
 					if(kParameter < 0) terminate("Error: k2 = %g vphi2 = %g s_r2 = %g type = %d i = %d R = %g", kParameter, Vphi2, FG_tilted_vR2[type][i], type, i, R);
 					//kParameter *=-1.0;
 					kParameter = sqrt(kParameter);
 				}
 			*/
-			
+
 			if(Vphi2 > 0) {
-					
+
 				double vstr = 0;
 
 				if(Vphi2 >= FG_tilted_vR2[type][i])
@@ -990,20 +990,20 @@ void calculate_dispfield(void) {
 
 #ifdef VAR_1_1_KPARAMETER_MOD
 				vstr = kParameter*sqrt(Vphi2); // needs to be divided with mass...
-#endif				
+#endif
 
 				FG_DispPhi[type][i] = Vphi2 - vstr * vstr;
 				FG_Vstream[type][i] = vstr;
-				
+
 			} else {
 				FG_DispPhi[type][i] = 0;
 				FG_Vstream[type][i] = 0;
 			}
-			
+
 		}
 
 		if(ThisTask == 0) {
-			
+
 			double *tmpR = mymalloc("tmpR", FG_Ngrid * sizeof(double));
 			double *tmpz = mymalloc("tmpz", FG_Ngrid * sizeof(double));
 
@@ -1040,10 +1040,10 @@ void calculate_dispfield(void) {
 		myfree(qprev);
 		myfree(FG_q);
 	}
-	
-	
-	
-	
+
+
+
+
 
 	mpi_printf("done.\n\n");
 }

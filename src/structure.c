@@ -53,10 +53,10 @@ static double gc_int(double x, void *param)
 
 void structure_determination(void)
 {
-  if (All.HaloUseTable != 0)  
+  if (All.HaloUseTable != 0)
   {
     load_profile_table();
-    All.PeakDens = DensTable[0]; 
+    All.PeakDens = DensTable[0];
     All.CoreRadius = pow(0.0019/All.m_22/All.m_22/All.PeakDens,0.25)*3.085678e21/All.UnitLength_in_cm;
     All.CoreEnMass = soliton_enclosed_mass(0.8*All.CoreRadius);
     All.Halo_Mass = halo_get_mass_inside_radius(1.0e+4);
@@ -98,9 +98,9 @@ void structure_determination(void)
   mpi_printf("M200            = %g  (this is the total mass)\n", All.M200);
   mpi_printf("Halo_Mass       = %g\n", All.Halo_Mass);
   mpi_printf("Disk_Mass       = %g\n", All.Disk_Mass);
-   
+
   All.Bulge_A = All.BulgeSize * All.Halo_A;	// this will be used if no disk is present
-  
+
   MType[1] = All.Halo_Mass;
   MType[2] = All.Disk_Mass;
   MType[3] = All.Bulge_Mass;
@@ -108,7 +108,7 @@ void structure_determination(void)
   NType[1] = All.Halo_N;
   NType[2] = All.Disk_N;
   NType[3] = All.Bulge_N;
- 
+
   mpi_printf("R  (disk)       = %g\n", All.Disk_R);
   mpi_printf("Z0 (disk)       = %g\n", All.Disk_Z0);
   mpi_printf("MD (disk)       = %g\n", All.MD);

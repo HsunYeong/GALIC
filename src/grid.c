@@ -202,7 +202,7 @@ void forcegrid_get_acceleration(double *pos, double *acc)
  */
 
 void forcegrid_allocate(void) {
-	
+
 	int type;
 
 	FG_Ngrid = FG_Nbin * FG_Nbin;
@@ -231,10 +231,10 @@ void forcegrid_allocate(void) {
 
 
 void energygrid_allocate(void) {
-	
+
 	int type;
 
-	// total elements in grid stack 
+	// total elements in grid stack
 	EG_Nstack = ((1 << (2 + 2 * EG_MaxLevel)) - 1) / 3;
 	EG_Nbin = (1 << EG_MaxLevel);
 
@@ -267,8 +267,8 @@ void energygrid_allocate(void) {
 		EG_EgyResponseTLoc_delta[type] = mymalloc("EG_EgyResponseTLoc_delta", sizeof(double) * EG_Ngrid);
 		EG_EgyResponsePLoc_delta[type] = mymalloc("EG_EgyResponsePLoc_delta", sizeof(double) * EG_Ngrid);
 		EG_EgyResponseQLoc_delta[type] = mymalloc("EG_EgyResponseQLoc_delta", sizeof(double) * EG_Ngrid);
-		
-	
+
+
 #ifdef VER_1_1
 		EG_MassLocS[type] = mymalloc("EG_MassLocS", sizeof(double) * EG_Ngrid);
 		EG_EgyResponseRLocS[type] = mymalloc("EG_EgyResponseRLocS", sizeof(double) * EG_Ngrid);
@@ -277,32 +277,32 @@ void energygrid_allocate(void) {
 
 		EG_EgyResponseTLocS[type] = mymalloc("EG_EgyResponseTLocS", sizeof(double) * EG_Ngrid);
 		EG_EgyResponseTLocS_delta[type] = mymalloc("EG_EgyResponseTLocS_delta", sizeof(double) * EG_Ngrid);
-		EGs_EgyResponseTS[type] = mymalloc("EGs_EgyResponseTS", EG_Nstack * sizeof(double));		
-		
+		EGs_EgyResponseTS[type] = mymalloc("EGs_EgyResponseTS", EG_Nstack * sizeof(double));
+
 		EG_EgyResponseQLocS[type] = mymalloc("EG_EgyResponseQLocS", sizeof(double) * EG_Ngrid);
 		EG_EgyResponseQLocS_delta[type] = mymalloc("EG_EgyResponseQLocS_delta", sizeof(double) * EG_Ngrid);
 		EGs_EgyResponseQS[type] = mymalloc("EGs_EgyResponseQS", EG_Nstack * sizeof(double));
-		
+
 		EG_EgyResponsePLocS[type] = mymalloc("EG_EgyResponsePLocS", sizeof(double) * EG_Ngrid);
 		EG_EgyResponsePLocS_delta[type] = mymalloc("EG_EgyResponsePLocS_delta", sizeof(double) * EG_Ngrid);
 		EGs_EgyResponsePS[type] = mymalloc("EGs_EgyResponsePS", EG_Nstack * sizeof(double));
 #endif
-		
+
 	}
 }
 
 
 void densitygrid_allocate(void) {
-	
+
 	int type;
 
 	// total elements in grid stack
 	DG_Nstack = ((1 << (2 + 2 * DG_MaxLevel)) - 1) / 3;
 
-	// finest grid resolution per dimension 
+	// finest grid resolution per dimension
 	DG_Nbin = (1 << DG_MaxLevel);
 
-	// elements in finest grid 
+	// elements in finest grid
 	DG_Ngrid = DG_Nbin * DG_Nbin;
 
 	DG_CellVol = mymalloc("DG_CellVol", DG_Ngrid * sizeof(double));
@@ -321,7 +321,7 @@ void densitygrid_allocate(void) {
 		DGs_MassResponse[type] = mymalloc("DGs_MassResponse", DG_Nstack * sizeof(double));
 
 	}
-	
+
 }
 
 
@@ -360,7 +360,7 @@ void forcedensitygrid_create(void) {
 	double y = (All.Rmax / DG_Rin);
 
 	do {
-		
+
 		double f = log((pow(DG_Fac, DG_Nbin) - 1.0) / (y * (DG_Fac - 1.0)));
 
 		double df = DG_Nbin / (DG_Fac - 1.0 / pow(DG_Fac, DG_Nbin - 1)) - 1.0 / (DG_Fac - 1.0);
@@ -372,7 +372,7 @@ void forcedensitygrid_create(void) {
 
 		if(iter > MAXITER)
 			terminate("iter > MAXITER");
-		
+
 	} while (fabs(dfac) > 1.0e-8 * DG_Fac);
 
 	DG_Rmin = DG_Rin / (DG_Fac - 1.0);
@@ -380,18 +380,18 @@ void forcedensitygrid_create(void) {
 	mpi_printf("Extension of first cell of density grid:   Rmin = %10g  (grid spacing factor=%g)\n",
 			DG_Rmin * (DG_Fac - 1.0), DG_Fac);
 
-	
+
 
 	/* now determine the DGs_Distance stack */
 
 	int i, j, k, l;
 
 	for(k = 0; k < DG_Nbin; k++) {
-			
+
 		for(j = 0; j < DG_Nbin; j++) {
 			double z = DG_Rmin * 0.5 * (pow(DG_Fac, k) + pow(DG_Fac, k + 1) - 2.0);
 			double R = DG_Rmin * 0.5 * (pow(DG_Fac, j) + pow(DG_Fac, j + 1) - 2.0);
-			
+
 			DGs_LogR[STACKOFFSET(DG_MaxLevel, k, j)] = log(R);
 			DGs_LogZ[STACKOFFSET(DG_MaxLevel, k, j)] = log(z);
 		}
@@ -419,8 +419,8 @@ void forcedensitygrid_create(void) {
 		}
 	}
 
-	
-	
+
+
 	/* now do the same thing for the force grid */
 
 	FG_Rin = DG_Rin;
@@ -431,7 +431,7 @@ void forcedensitygrid_create(void) {
 	y = (All.Rmax / FG_Rin);
 
 	do {
-		
+
 		double f = log((pow(FG_Fac, FG_Nbin) - 1.0) / (y * (FG_Fac - 1.0)));
 
 		double df = FG_Nbin / (FG_Fac - 1.0 / pow(FG_Fac, FG_Nbin - 1)) - 1.0 / (FG_Fac - 1.0);
@@ -443,7 +443,7 @@ void forcedensitygrid_create(void) {
 
 		if(iter > MAXITER)
 			terminate("iter > MAXITER");
-		
+
 	} while(fabs(dfac) > 1.0e-8 * FG_Fac);
 
 	FG_Rmin = FG_Rin / (FG_Fac - 1.0);
@@ -451,7 +451,7 @@ void forcedensitygrid_create(void) {
 	mpi_printf("Extension of first cell of force grid:     Rmin = %10g  (grid spacing factor=%g)\n",
 			FG_Rmin * (FG_Fac - 1.0), FG_Fac);
 
-	
+
 
 	/* now do the same thing for the energy grid */
 
@@ -463,7 +463,7 @@ void forcedensitygrid_create(void) {
 	y = (All.Rmax / EG_Rin);
 
 	do {
-		
+
 		double f = log((pow(EG_Fac, EG_Nbin) - 1.0) / (y * (EG_Fac - 1.0)));
 
 		double df = EG_Nbin / (EG_Fac - 1.0 / pow(EG_Fac, EG_Nbin - 1)) - 1.0 / (EG_Fac - 1.0);
@@ -475,7 +475,7 @@ void forcedensitygrid_create(void) {
 
 		if(iter > MAXITER)
 			terminate("iter > MAXITER");
-		
+
 	} while(fabs(dfac) > 1.0e-8 * EG_Fac);
 
 	EG_Rmin = EG_Rin / (EG_Fac - 1.0);
@@ -487,7 +487,7 @@ void forcedensitygrid_create(void) {
 
 	mpi_printf("Extension of first cell of energy grid:     Rmin = %10g  (grid spacing factor=%g)\n",
 			EG_Rmin * (EG_Fac - 1.0), EG_Fac);
-	
+
 }
 
 
@@ -821,7 +821,7 @@ void forcedensitygrid_calculate(void)
       fwrite(tmpz, sizeof(double), FG_Ngrid, fd);
 
       fclose(fd);
-     
+
       myfree(tmpz);
       myfree(tmpR);
     }
@@ -942,7 +942,7 @@ void energygrid_get_cell(double *pos, int *iR, int *iz, double *fR, double *fz)
 
 
 void calc_energy_grid_mass_maps(void){
-		
+
 	int i, j, k, iR, iz, type, count, cstart;
 	double fR, fz;
 	double *mfield, *egyfield_r, *egyfield_t, *egyfield_p, *egyfield_q, pos[3];
@@ -952,7 +952,7 @@ void calc_energy_grid_mass_maps(void){
 
 	for(type = 1; type <= 3; type++) {
 	if(MType[type] > 0) {
-			
+
 		mfield = mymalloc("mfield", EG_Nbin * EG_Nbin * sizeof(double));
 		egyfield_r = mymalloc("egyfield_r", EG_Nbin * EG_Nbin * sizeof(double));
 		egyfield_t = mymalloc("egyfield_t", EG_Nbin * EG_Nbin * sizeof(double));
@@ -961,7 +961,7 @@ void calc_energy_grid_mass_maps(void){
 
 		for(k = 0; k < EG_Nbin; k++)
 		for(j = 0; j < EG_Nbin; j++) {
-				
+
 			i = k * EG_Nbin + j;	/* r,z */
 
 			mfield[i] = 0;
@@ -969,7 +969,7 @@ void calc_energy_grid_mass_maps(void){
 			egyfield_t[i] = 0;
 			egyfield_p[i] = 0;
 			egyfield_q[i] = 0;
-			
+
 		}
 
 		count = 0;
@@ -977,8 +977,8 @@ void calc_energy_grid_mass_maps(void){
 		int ntarget = All.SampleParticleCount / NTask + 1;
 
 		while(count < ntarget){
-			
-			if(type == 1) 
+
+			if(type == 1)
 				halo_get_fresh_coordinate(pos);	/* a halo particle */
 			else if(type == 2)
 				disk_get_fresh_coordinate(pos);	/* disk particle */
@@ -988,7 +988,7 @@ void calc_energy_grid_mass_maps(void){
 			double r = sqrt(pos[0] * pos[0] + pos[2] * pos[2]);
 
 			if(r < All.Rmax) {
-				
+
 				energygrid_get_cell(pos, &iR, &iz, &fR, &fz);
 
 				double disp_r = 0, disp_t = 0, disp_p = 0, disp_q = 0;
@@ -1019,14 +1019,14 @@ void calc_energy_grid_mass_maps(void){
 				egyfield_p[(iz + 1) * EG_Nbin + iR] +=  (1 - fR) * (fz) * disp_p;
 				egyfield_p[(iz + 1) * EG_Nbin + (iR + 1)] +=  (fR) * (fz) * disp_p;
 
-				
-				
+
+
 				egyfield_q[iz * EG_Nbin + iR] +=  (1 - fR) * (1 - fz) * disp_q;
 				egyfield_q[iz * EG_Nbin + (iR + 1)] +=  (fR) * (1 - fz) * disp_q;
 				egyfield_q[(iz + 1) * EG_Nbin + iR] +=  (1 - fR) * (fz) * disp_q;
 				egyfield_q[(iz + 1) * EG_Nbin + (iR + 1)] +=  (fR) * (fz) * disp_q;
-				
-				
+
+
 				if(count >= cstart) {
 					mpi_printf(".");
 					fflush(stdout);
@@ -1049,7 +1049,7 @@ void calc_energy_grid_mass_maps(void){
 
 		for(k = 0; k < EG_Nbin; k++)
 		for(j = 0; j < EG_Nbin; j++) {
-			
+
 			i = k * EG_Nbin + j;	/* r,z */
 
 			EGs_MassTarget[type][STACKOFFSET(EG_MaxLevel, 0, 0) + i] *= MType[type] / nsum;
@@ -1057,7 +1057,7 @@ void calc_energy_grid_mass_maps(void){
 			EGs_EgyTarget_t[type][STACKOFFSET(EG_MaxLevel, 0, 0) + i] *= MType[type] / nsum;
 			EGs_EgyTarget_p[type][STACKOFFSET(EG_MaxLevel, 0, 0) + i] *= MType[type] / nsum;
 			EGs_EgyTarget_q[type][STACKOFFSET(EG_MaxLevel, 0, 0) + i] *= MType[type] / nsum;
-			
+
 		}
 
 		smooth_stack(EGs_MassTarget[type], EG_MaxLevel);
@@ -1071,7 +1071,7 @@ void calc_energy_grid_mass_maps(void){
 		myfree(egyfield_t);
 		myfree(egyfield_r);
 		myfree(mfield);
-		
+
 	}
 	}
 
@@ -1082,27 +1082,27 @@ double min(double a, double b)
 {
   if(a < b)
     return a;
-  else 
+  else
     return b;
 }
 
-double calc_stack_difference(	double *d1, double *d2, int l, int i, int j, int maxlevel, 
+double calc_stack_difference(	double *d1, double *d2, int l, int i, int j, int maxlevel,
 										double *ref1, double *ref2,
 										double thresh, double *dist, int flag) {
-	
+
 	if(l >= maxlevel || ref1[STACKOFFSET(l, i, j)] < thresh) {
-		
+
 		if(flag) {
 			if(ref1[STACKOFFSET(l, i, j)] > 0 && ref2[STACKOFFSET(l, i, j)] > 0)
 				return fabs(d1[STACKOFFSET(l, i, j)] / ref1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)]) / dmax((d2[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)]), All.LowerDispLimit);
 			else
 				return 0;
 		} else {
-			return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0); 
+			return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0);
 		}
-		
+
 	} else {
-		
+
 		double sum = 0;
 		int ii, jj;
 
@@ -1115,33 +1115,33 @@ double calc_stack_difference(	double *d1, double *d2, int l, int i, int j, int m
 }
 
 #ifdef VER_1_1
-double calc_stack_difference_mod(	double *d1, double *d2, int l, int i, int j, int maxlevel, 
+double calc_stack_difference_mod(	double *d1, double *d2, int l, int i, int j, int maxlevel,
 												double *ref1, double *ref2,
 												double thresh, double *dist, int flag ) {
-	
+
 	if(l >= maxlevel || ref1[STACKOFFSET(l, i, j)] < thresh) {
-		
+
 		if(flag==1) {
-			
+
 			if(ref1[STACKOFFSET(l, i, j)] > 0 && ref2[STACKOFFSET(l, i, j)] > 0)
 				return fabs(d1[STACKOFFSET(l, i, j)] / ref1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)]) / dmax((d2[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)]), All.LowerDispLimit);
 			else
 				return 0;
-			
+
 		} else if (flag==2) {
 
 			if ( ref2[STACKOFFSET(l, i, j)] > 0 ){
-				return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) * ( ref1[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)] ) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0) ;  
+				return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) * ( ref1[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)] ) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0) ;
 			} else
 				return 0;
-			
+
 		} else {
-			
-			return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0); 
+
+			return fabs(d1[STACKOFFSET(l, i, j)] - d2[STACKOFFSET(l, i, j)]) / min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0);
 		}
-		
+
 	} else {
-		
+
 		double sum = 0;
 		int ii, jj;
 
@@ -1155,15 +1155,15 @@ double calc_stack_difference_mod(	double *d1, double *d2, int l, int i, int j, i
 
 
 
-double calc_stack_sum(	double *ref, double *thr, int l, int i, int j, int maxlevel, 
+double calc_stack_sum(	double *ref, double *thr, int l, int i, int j, int maxlevel,
 										double thresh, double *dist) {
-	
+
 	if(l >= maxlevel || thr[STACKOFFSET(l, i, j)] < thresh) {
-		
-		return ref[STACKOFFSET(l, i, j)] /*/ min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0)*/; 
-		
+
+		return ref[STACKOFFSET(l, i, j)] /*/ min(dist[STACKOFFSET(l, i, j)], All.R200 / 20.0)*/;
+
 	} else {
-		
+
 		double sum = 0;
 		int ii, jj;
 
@@ -1177,7 +1177,7 @@ double calc_stack_sum(	double *ref, double *thr, int l, int i, int j, int maxlev
 #endif
 
 
-double calc_stack_difference_used(double *d1, double *d2, int l, int i, int j, int maxlevel, 
+double calc_stack_difference_used(double *d1, double *d2, int l, int i, int j, int maxlevel,
 				  double *ref1, double *ref2, double *used1, double *used2,
 				  double thresh, int flag)
 {
@@ -1191,7 +1191,7 @@ double calc_stack_difference_used(double *d1, double *d2, int l, int i, int j, i
 
 	      used1[EG_Nbin *(i*fac + fac/2) + j*fac + fac/2] = d1[STACKOFFSET(l, i, j)] / ref1[STACKOFFSET(l, i, j)];
 	      used2[EG_Nbin *(i*fac + fac/2) + j*fac + fac/2] = d2[STACKOFFSET(l, i, j)] / ref2[STACKOFFSET(l, i, j)];
-	      
+
 	      return 0;
 	    }
           else
@@ -1248,23 +1248,23 @@ double eval_smoothed_stack(double *din, int l, int i, int j, int maxlevel, doubl
 
 
 void smooth_stack(double *data, int maxlevel) {
-	
+
 	int l, i, j, n;
 
 	for(l = maxlevel - 1; l >= 0; l--) {
 		n = (1 << l);
 		for(i = 0; i < n; i++)
 		for(j = 0; j < n; j++) {
-			
+
 			data[STACKOFFSET(l, i, j)] =
 				data[STACKOFFSET(l + 1, 2 * i, 2 * j)] +
 				data[STACKOFFSET(l + 1, 2 * i + 1, 2 * j)] +
-				data[STACKOFFSET(l + 1, 2 * i, 2 * j + 1)] + 
+				data[STACKOFFSET(l + 1, 2 * i, 2 * j + 1)] +
 				data[STACKOFFSET(l + 1, 2 * i + 1, 2 * j + 1)];
-			
+
 		}
 	}
-	
+
 }
 
 
@@ -1283,7 +1283,7 @@ void force_test(void)
 
       for(i=0; i< N; i++)
 	{
-          halo_get_fresh_coordinate(pos);    /* a halo particle */ 
+          halo_get_fresh_coordinate(pos);    /* a halo particle */
           forcegrid_get_acceleration(pos, acc);
           halo_get_acceleration(pos, acc_exact);
 

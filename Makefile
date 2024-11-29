@@ -3,7 +3,7 @@
 # * This file is part of the GALIC code developed by D. Yurin and V. Springel.
 # *
 # * Copyright (c) 2014
-# * Denis Yurin (denis.yurin@h-its.org) 
+# * Denis Yurin (denis.yurin@h-its.org)
 # * Volker Springel (volker.springel@h-its.org)
 # *******************************************************************************/
 #
@@ -15,7 +15,7 @@
 #
 #  (1) Copy the file "Template-Config.sh"  to  "Config.sh"
 #
-#        cp Template-Config.sh Config.sh 
+#        cp Template-Config.sh Config.sh
 #
 #  (2) Edit "Config.sh" as needed for your application
 #
@@ -24,18 +24,18 @@
 #
 #
 #
-#  New compile-time options should be added to the 
+#  New compile-time options should be added to the
 #  file "Template-Config.sh" only. Usually, the should be added
 #  there in the disabled/default version.
 #
 #  "Config.sh" should not be checked in to the repository
 #
-#  Note: It is possible to override the default name of the 
+#  Note: It is possible to override the default name of the
 #  Config.sh file, if desired, as well as the name of the
 #  executable. For example:
 #
 #   make CONFIG=MyNewConf.sh EXEC=GalIC_new
-# 
+#
 #-----------------------------------------------------------------
 #
 # You might also be looking for the target system SYSTYPE option
@@ -49,12 +49,12 @@
 #        e.g. export SYSTYPE=Magny
 # or
 #
-# (B) set SYSTYPE in Makefile.systype 
+# (B) set SYSTYPE in Makefile.systype
 #     This file has priority over your shell variable:
 #
 #    (1) Copy the file "Template-Makefile.systype"  to  "Makefile.systype"
 #
-#        cp Template-Makefile.systype Makefile.systype 
+#        cp Template-Makefile.systype Makefile.systype
 #
 #    (2) Uncomment your system in  "Makefile.systype".
 #
@@ -104,11 +104,11 @@ OPTIMIZE +=  -fopenmp
 MPI_COMPILE_FLAGS = $(shell mpicc --showme:compile)
 CC       =  gcc  $(MPI_COMPILE_FLAGS)      # to replace clang with gcc (mpicc uses clang for some reason)
 endif
-GSL_INCL = -I/sw/include -I/opt/local/include 
+GSL_INCL = -I/sw/include -I/opt/local/include
 GSL_LIBS = -L/sw/lib     -L/opt/local/lib
 FFTW_INCL= -I/sw/include -I/opt/local/include
 FFTW_LIBS= -L/sw/lib     -L/opt/local/lib
-MPICHLIB = -lmpi 
+MPICHLIB = -lmpi
 HDF5INCL = -I/sw/lib     -I/opt/local/include -DH5_USE_16_API #-DUSE_SSE
 HDF5LIB  = -L/sw/lib -L/opt/local/lib  -lhdf5 -lz
 endif
@@ -120,7 +120,7 @@ OPTIMIZE = -m64 -ggdb -O3 -Wall -Wextra -Wno-format-security -Wno-unknown-pragma
 ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
 OPTIMIZE+= -fopenmp
 endif
-GSL_INCL = -I/opt/local/include 
+GSL_INCL = -I/opt/local/include
 GSL_LIBS = -L/opt/local/lib
 FFTW_INCL= -I/opt/local/include
 FFTW_LIBS= -L/opt/local/lib
@@ -136,9 +136,9 @@ endif
 # modules for Magny
 # module add mvapich2/gcc/64/1.6-qlc
 
-ifeq ($(SYSTYPE),"Magny") 
+ifeq ($(SYSTYPE),"Magny")
 CC       =   mpicc
-OPTIMIZE =   -g -Wall -m64   -O3 -msse3 
+OPTIMIZE =   -g -Wall -m64   -O3 -msse3
 ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
 OPTIMIZE +=  -fopenmp
 else
@@ -161,9 +161,9 @@ endif
 
 # modules for Nehalem cluster
 # module add mvapich2/gcc/64/1.6
-ifeq ($(SYSTYPE),"Nehalem") 
+ifeq ($(SYSTYPE),"Nehalem")
 CC       =   mpicc
-ifeq (SOFTDOUBLEDOUBLE,$(findstring SOFTDOUBLEDOUBLE,$(CONFIGVARS))) 
+ifeq (SOFTDOUBLEDOUBLE,$(findstring SOFTDOUBLEDOUBLE,$(CONFIGVARS)))
 CC       =   mpicxx
 endif
 OPTIMIZE =  -O3 -msse3 -g -Wall -m64
@@ -173,7 +173,7 @@ FFTW_INCL=  -I/hits/tap/sw/libs/include
 FFTW_LIBS=  -L/hits/tap/sw/libs/lib  -Xlinker -R -Xlinker /hits/tap/sw/libs/lib
 MPICHLIB =
 HDF5INCL =  -I/hits/tap/sw/nehalem/include -DH5_USE_16_API
-#HDF5LIB  =  -L/hits/tap/sw/nehalem/lib -Xlinker -R -Xlinker /hits/tap/sw/nehalem/lib -lhdf5  
+#HDF5LIB  =  -L/hits/tap/sw/nehalem/lib -Xlinker -R -Xlinker /hits/tap/sw/nehalem/lib -lhdf5
 HDF5LIB  =  /hits/tap/sw/nehalem/lib/libhdf5.a -lz
 #OPT      +=  -DNOCALLSOFSYSTEM
 #OPT      +=  -DIMPOSE_PINNING
@@ -187,7 +187,7 @@ endif
 # module load intel/compiler
 # module load mvapich2/intel/64/1.6-qlc
 
-ifeq ($(SYSTYPE),"Magny-Intel") 
+ifeq ($(SYSTYPE),"Magny-Intel")
 CC       =   mpicc
 OPTIMIZE =   -O2 -g -Wall -m64
 ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
@@ -211,7 +211,7 @@ endif
 # module load intel/compiler
 # module load mvapich2/intel/64/1.6-qlc
 
-ifeq ($(SYSTYPE),"eureka") 
+ifeq ($(SYSTYPE),"eureka")
 CC       =   mpicc
 CXX      =   mpicxx
 OPTIMIZE =   -O3 -g -Wall -m64
@@ -245,7 +245,7 @@ endif
 #determine the needed object/header files#
 ##########################################
 
-SUBDIRS = . 
+SUBDIRS = .
 
 OBJS =   main.o allocate.o  allvars.o  disk.o   grid.o  bulge.o  set_particles.o parallel_sort.o \
 	     halo.o init.o  io.o  mymalloc.o  orbit_response.o  parameters.o  structure.o  system.o  disp_fields.o \
@@ -264,11 +264,11 @@ SUBDIRS += forcetree domain
 
 
 ifneq (HAVE_HDF5,$(findstring HAVE_HDF5,$(CONFIGVARS)))
-HDF5LIB  = 
+HDF5LIB  =
 endif
 
 ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
-THREAD_LIB = 
+THREAD_LIB =
 endif
 
 
@@ -277,8 +277,8 @@ endif
 ##########################
 
 CFLAGS = $(OPTIMIZE) $(OPT) $(HDF5INCL) $(GSL_INCL) $(FFTW_INCL) $(ODE_INCL) $(GMP_INCL) $(MKL_INCL) $(CUDA_INCL) -I$(BUILD_DIR)
- 
-CFLAGS_CUDA = $(CUDA_OPTIMIZE) $(OPT) $(GSL_INCL) $(FFTW_INCL) $(HDF5INCL) $(ODE_INCL) $(GMP_INCL) $(MKL_INCL) $(CUDA_INCL) -I$(BUILD_DIR) 
+
+CFLAGS_CUDA = $(CUDA_OPTIMIZE) $(OPT) $(GSL_INCL) $(FFTW_INCL) $(HDF5INCL) $(ODE_INCL) $(GMP_INCL) $(MKL_INCL) $(CUDA_INCL) -I$(BUILD_DIR)
 
 LIBS = $(MATHLIB) $(HDF5LIB) $(MPICHLIB) $(GSL_LIBS) $(GSLLIB) $(FFTW_LIB) $(GMP_LIBS) $(GMPLIB) $(ODE_LIB) $(MKL_LIBS) $(THREAD_LIB) $(CUDA_LIBS)
 

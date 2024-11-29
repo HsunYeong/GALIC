@@ -62,7 +62,7 @@ double disk_get_density(double *pos)
 	exp(-R / All.Disk_R) * pow(2 / (exp(z / All.Disk_Z0) + exp(-z / All.Disk_Z0)), 2);
 
 		if ( fabs(rho) <  MIN_DENSITY) rho = 0;
-  
+
       return rho;
     }
   else

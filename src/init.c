@@ -31,7 +31,7 @@ void init(void)
   All.TopNodeAllocFactor = 0.1;
   All.TreeAllocFactor = 0.8;
 
-  
+
 #ifdef DEBUG_ENABLE_FPU_EXCEPTIONS
   enable_core_dumps_and_fpu_exceptions();
 #endif

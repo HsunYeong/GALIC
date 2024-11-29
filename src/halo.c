@@ -20,7 +20,7 @@ double interpolation_M2R(double m)
   while(i <= j)
   {
     int mid = i + (j - i)/2;
-    if(EnMassTable[mid] == m) 
+    if(EnMassTable[mid] == m)
     {
        i = mid;
        break;
@@ -57,7 +57,7 @@ void halo_get_fresh_coordinate(double *pos)
   int count = 0;
   do
     {
-      double q = gsl_rng_uniform(random_generator);      
+      double q = gsl_rng_uniform(random_generator);
       if (All.HaloUseTable == 0)
       {
 
@@ -72,7 +72,7 @@ void halo_get_fresh_coordinate(double *pos)
       }
       double phi = gsl_rng_uniform(random_generator) * M_PI * 2;
       double theta = acos(gsl_rng_uniform(random_generator) * 2 - 1);
-      
+
       pos[0] = r * sin(theta) * cos(phi);
       pos[1] = r * sin(theta) * sin(phi);
       pos[2] = r * cos(theta) / All.HaloStretch;
@@ -80,7 +80,7 @@ void halo_get_fresh_coordinate(double *pos)
       r = sqrt(pos[0]*pos[0] + pos[1]*pos[1] + pos[2]*pos[2]);
       count += 1;
       if (count > 1e3)
-      { 
+      {
          mpi_printf("Too many loops! r = %g\n", r);
          count = 0;
       }
@@ -105,13 +105,13 @@ double halo_mass_to_radius(double m)
         if (fabs(dr) > 0.5*r) dr = 0.5* r * dr / fabs(dr);
         else dr = dr * 0.1;
         r = r + dr;
-      } 
+      }
       while(fabs(dr)/r > 1.0e-4);
     }
     else r = 0;
-    return r; 
+    return r;
   }
-  else return interpolation_M2R(m);   
+  else return interpolation_M2R(m);
 }
 double halo_get_density(double *pos) {
 
@@ -127,57 +127,57 @@ double halo_get_density(double *pos) {
   }
 }
 
-double halo_get_density_from_radius(double r) {	
+double halo_get_density_from_radius(double r) {
   if (r < ProfileTable_r[0]) return DensTable[0];
   else if (r > ProfileTable_r[All.Nbin_Profile-1]) return 0;
-  else return get_value_from_interpolation_log(r, DensTable);   
+  else return get_value_from_interpolation_log(r, DensTable);
 }
 
 double soliton_density(double r) {
-  
+
   double rho =  0.0019 / All.m_22 / All.m_22 * pow(1.0 / All.CoreRadius/ pow(1 + 0.091 * pow(r / All.CoreRadius, 2), 2), 4);
-  
+
   if ( fabs(rho) <  MIN_DENSITY) rho = 0;
- 
+
   return rho;
 }
 
 double soliton_enclosed_mass(double r)
 {
   if (r==0) return 0;
-  else 
+  else
   {
     double r_sol = All.CoreRadius;
     double A = 0.0019/All.m_22/All.m_22/pow(r_sol, 4);
-    double B = 0.091; 
+    double B = 0.091;
     double soliton_mass = M_PI*pow(r_sol,3)*A/53760/pow(B,1.5)*(r_sol*sqrt(B)*r/pow(r_sol*r_sol+B*r*r,7)
            *(-3465*pow(r_sol,12)+48580*pow(r_sol,10)*B*r*r+92323*pow(r_sol,8)*B*B*pow(r,4)+101376*pow(r_sol,6)*pow(B,3)*pow(r,6)
            +65373*pow(r_sol,4)*pow(B,4)*pow(r,8)+23100*r_sol*r_sol*pow(B,5)*pow(r,10)+3465*pow(B,6)*pow(r,12))
-           +3465*atan(sqrt(B)*r/r_sol)); 
+           +3465*atan(sqrt(B)*r/r_sol));
     return soliton_mass;
   }
 }
 double halo_get_mass_inside_radius(double r)
-{ 
+{
   if (All.HaloUseTable == 0)
   {
     return All.Halo_Mass * pow(r / (r + All.Halo_A), 2);
-  } 
+  }
   else
   {
     if (r < ProfileTable_r[0]) return soliton_enclosed_mass(r);
     else if( r > ProfileTable_r[All.Nbin_Profile-1]) return EnMassTable[All.Nbin_Profile-1];
-    else return get_value_from_interpolation_log(r, EnMassTable);  
+    else return get_value_from_interpolation_log(r, EnMassTable);
   }
 }
 double hyperg_z_GT1(double a, double b, double c, double z)
 {
   // calculate 2F1 for z < -1
   double coef1, coef2;
-  
+
   coef1 = gsl_sf_gamma(c)*gsl_sf_gamma(b-a)*pow(1-z, -a)/(gsl_sf_gamma(b)*gsl_sf_gamma(c-a));
   coef2 = gsl_sf_gamma(c)*gsl_sf_gamma(a-b)*pow(1-z, -b)/(gsl_sf_gamma(a)*gsl_sf_gamma(c-b));
-  
+
   return coef1*gsl_sf_hyperg_2F1(a, c-b, a-b+1, 1/(1-z)) + coef2*gsl_sf_hyperg_2F1(b, c-a, b-a+1, 1/(1-z));
 }
 static double potential_int(double r, void *param) {
@@ -201,7 +201,7 @@ double halo_get_potential_from_radius(double r)
   {
     if (r < ProfileTable_r[0]) return PoteTable[0];
     else if (r > ProfileTable_r[All.Nbin_Profile-1])
-    {    
+    {
       gsl_function F;
       gsl_integration_workspace *workspace = gsl_integration_workspace_alloc(WORKSIZE);
       F.function = &potential_int;
@@ -210,7 +210,7 @@ double halo_get_potential_from_radius(double r)
       gsl_integration_workspace_free(workspace);
       return -1*result;
     }
-    else return get_value_from_interpolation(r, PoteTable);  
+    else return get_value_from_interpolation(r, PoteTable);
   }
 }
 
@@ -219,7 +219,7 @@ void halo_get_acceleration(double *pos, double *acc)
 {
   double r = sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]);
   double fac;
-  if (All.HaloUseTable == 0) 
+  if (All.HaloUseTable == 0)
   {
      fac = All.G * All.Halo_Mass / ((r + 1.0e-6 * All.Halo_A)* (r + All.Halo_A) * (r + All.Halo_A));
   }
@@ -244,7 +244,7 @@ double halo_get_energy(void)
   double result, abserr;
   gsl_integration_qagiu(&F, 0, 0, 1.0e-8, WORKSIZE, workspace, &result, &abserr);
   gsl_integration_workspace_free(workspace);
-  
+
   return result;
 }
 /*double halo_get_escape_speed(double *pos)
@@ -257,30 +257,30 @@ double halo_get_energy(void)
 }*/
 
 /*double halo_get_sigma2(double *pos) {
-	
+
 	long double r = sqrt(pos[0]*pos[0] + pos[1]*pos[1] + pos[2]*pos[2]);
 
 	long double m = All.Halo_Mass;
 	long double r0 = All.Halo_A;
 	long double r_over_r0 = r/r0;
 
-	long double _sigma2 = 
+	long double _sigma2 =
 	(long double)(All.G*m)/(12.0*r0)*
-	fabs( 12*r*powl(r+r0,3)/powl(r0,4)*logl((r+r0)/r) 
-			- 
-			r/(r+r0)*(25 + r_over_r0*(52 + 42*r_over_r0 + 12*(r_over_r0*r_over_r0) ) ) 
+	fabs( 12*r*powl(r+r0,3)/powl(r0,4)*logl((r+r0)/r)
+			-
+			r/(r+r0)*(25 + r_over_r0*(52 + 42*r_over_r0 + 12*(r_over_r0*r_over_r0) ) )
 		 );
-	
+
 	// precicion big rip so let it be like this for a while
-	if (65000<r) 
+	if (65000<r)
 		_sigma2 = pow(halo_get_escape_speed(pos)/3.14, 2);
 		//_sigma2 = SQR(vesc(_r)/3.14);
 
 
 	return _sigma2;
-	
+
 }*/
-		
+
 
 
 

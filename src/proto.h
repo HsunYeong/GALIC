@@ -20,11 +20,11 @@ double calc_stack_difference(double *d1, double *d2, int l, int i, int j, int ma
 
 #ifdef VER_1_1
 double calc_stack_difference_mod(double *d1, double *d2, int l, int i, int j, int maxlevel, double *ref1, double *ref2, double thresh, double *dist, int flag);
-double calc_stack_sum(	double *ref, double *thr, int l, int i, int j, int maxlevel, double thresh, double *dist ); 
+double calc_stack_sum(	double *ref, double *thr, int l, int i, int j, int maxlevel, double thresh, double *dist );
 #endif
 
 
-double calc_stack_difference_used(double *d1, double *d2, int l, int i, int j, int maxlevel, 
+double calc_stack_difference_used(double *d1, double *d2, int l, int i, int j, int maxlevel,
 				  double *ref1, double *ref2, double *used1, double *used2,
 				  double thresh, int flag);
 
@@ -99,7 +99,7 @@ double structure_gc(double c);
 
 double eval_fit(int n, double *vel, double *newdens, double *olddens);
 #ifdef VER_1_1
-double eval_fit_mod(int n, double *vel, double *newdens, double *olddens, double *egyROrbit_new, double *egyROrbit_old, 
+double eval_fit_mod(int n, double *vel, double *newdens, double *olddens, double *egyROrbit_new, double *egyROrbit_old,
 																								  double *egyTOrbit_new, double *egyTOrbit_old,
 																								  double *egyQOrbit_new, double *egyQOrbit_old,
 																								  double *egyPOrbit_new, double *egyPOrbit_old );

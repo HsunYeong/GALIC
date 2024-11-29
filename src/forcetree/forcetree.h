@@ -34,7 +34,7 @@ static inline unsigned long long force_double_to_int(double d)
 {
    union { double d; unsigned long long ull; } u;
    u.d=d;
-   return (u.ull&0xFFFFFFFFFFFFFllu); 
+   return (u.ull&0xFFFFFFFFFFFFFllu);
 }
 
 static inline double force_int_to_double(unsigned long long x)
