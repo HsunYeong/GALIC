@@ -555,6 +555,7 @@ void calculate_dispfield(void) {
 			sprintf(buf, "%s/sigma_r_%d.txt", All.OutputDir, type);
 			FILE *fd = fopen(buf, "w");
 			fprintf(fd, "%d\n", FG_Nbin);
+         fprintf(fd, "#R              sigma_r^2      Beta\n");
 
 			for(j = 0; j < FG_Nbin; j++) {
 				r1 = FG_Rmin * (pow(FG_Fac, j) - 1.0);
@@ -562,7 +563,7 @@ void calculate_dispfield(void) {
 				pos[0] = r1;
 				pos[1] = 0;
 				pos[2] = 0;
-				fprintf(fd, "%g    %g    %g\n", r1, FG_Disp_r[type][j], get_beta_of_type(pos, type));
+				fprintf(fd, " %3.7e  %3.7e  %3.7e\n", r1, FG_Disp_r[type][j], get_beta_of_type(pos, type));
 			}
 
 			fclose(fd);

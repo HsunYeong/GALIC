@@ -83,7 +83,7 @@ TimeStepFactorCellCross            0.25
 FractionToOptimizeIndependendly    0.001
 IndepenentOptimizationsPerStep     100
 StepsBetweenDump                   50
-MaximumNumberOfSteps               00
+MaximumNumberOfSteps               50
 
 MinParticlesPerBinForDispersionMeasurement   100
 MinParticlesPerBinForDensityMeasurement      50

@@ -345,7 +345,7 @@ void output_toomre_Q(void)
 
       sprintf(buf, "%s/toomreQ.txt", All.OutputDir);
       FILE *fd = fopen(buf, "w");
-      fprintf(fd, "#%d\n", n);
+      fprintf(fd, "#R              toomreQ\n");
 
       for(j = 0; j < n; j++)
         {
@@ -385,7 +385,7 @@ void output_toomre_Q(void)
 
           double Q = sigmaR * kappa / (3.36 * All.G * sigma_star);
 
-          fprintf(fd, "%g %g\n", R, Q);
+          fprintf(fd, " %3.7e  %3.7e\n", R, Q);
         }
       fclose(fd);
     }
@@ -405,6 +405,7 @@ void output_rotcurve(void)
       sprintf(buf, "%s/rotcurve.txt", All.OutputDir);
       FILE *fd = fopen(buf, "w");
       fprintf(fd, "#%d\n", n);
+      fprintf(fd, "#R              vc_tot         vc_halo        vc_diski       vc_bulge       v_phi\n");
 
       double vc2_tot, vc2_dm, vc2_disk, vc2_bulge, vphi;
 
@@ -439,7 +440,7 @@ void output_rotcurve(void)
             vc2_disk = 0;
           vphi = get_vstream(pos, 2);
 
-          fprintf(fd, "%g   %g   %g %g %g %g\n", R, sqrt(vc2_tot), sqrt(vc2_dm), sqrt(vc2_disk), sqrt(vc2_bulge), vphi);
+          fprintf(fd, " %3.7e  %3.7e  %3.7e  %3.7e  %3.7e  %3.7e\n", R, sqrt(vc2_tot), sqrt(vc2_dm), sqrt(vc2_disk), sqrt(vc2_bulge), vphi);
         }
       fclose(fd);
     }
@@ -461,7 +462,8 @@ void output_rotcurve_avg(void)
 
       sprintf(buf, "%s/rotcurve_avg.txt", All.OutputDir);
       FILE *fd = fopen(buf, "w");
-      fprintf(fd, "#%d\n", n);
+      fprintf(fd, "average rotation speed and velocity dispersion through z direction");
+      fprintf(fd, "#R              v_phi          sigma_R\n");
 
       for(j = 0; j < n; j++)
         {
@@ -476,14 +478,14 @@ void output_rotcurve_avg(void)
              pos[0] = R;
              pos[1] = 0;
              pos[2] = Z;
-             rho +=  disk_get_density(pos);
+             rho  += disk_get_density(pos);
              vphi += disk_get_density(pos)*get_vstream(pos, 2);
              get_disp_rtp(pos, 2, &disp_r, &disp_t, &disp_p, &disp_q);
              disp += disk_get_density(pos)*disp_r;
            }
          disp = disp/rho;
          vphi = vphi/rho;
-         fprintf(fd, "%g   %g   %g\n", R, vphi, sqrt(disp));
+         fprintf(fd, " %3.7e  %3.7e  %3.7e\n", R, vphi, sqrt(disp));
        }
       fclose(fd);
     }
