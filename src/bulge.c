@@ -41,9 +41,9 @@ double bulge_get_density(double *pos)
   double r = sqrt(pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2]);
 
   double rho = All.BulgeStretch * All.Bulge_Mass / (2 * M_PI) * All.Bulge_Mass / (r + 1.0e-6 * All.Bulge_A) / pow(r + All.Bulge_A, 3);
-  
+
   if ( fabs(rho) <  MIN_DENSITY) rho = 0;
-	  
+
   return rho;
 }
 

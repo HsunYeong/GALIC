@@ -1,10 +1,10 @@
-# Select Target Computer 
+# Select Target Computer
 #
 # Please copy this file to Makefile.systype and uncomment your
 # system. Don't commit changes to this file unless you add support for
 # a new system.
 
-SYSTYPE="APHI"
+#SYSTYPE="APHI"
 #SYSTYPE="Curie"
 #SYSTYPE="Hermite"
 #SYSTYPE="Ranger_pgi"
@@ -29,7 +29,7 @@ SYSTYPE="APHI"
 #SYSTYPE="Odin"
 #SYSTYPE="OpteronMPA-Gnu"
 #SYSTYPE="OpteronMPA-Intel"
-#SYSTYPE="MPA"	
+#SYSTYPE="MPA"
 #SYSTYPE="VIP"
 #SYSTYPE="odyssey"
 #SYSTYPE="odyssey-intel"
@@ -37,3 +37,4 @@ SYSTYPE="APHI"
 #SYSTYPE="Ubuntu"
 #SYSTYPE="Centos5-intel"
 #SYSTYPE="Centos5-Gnu"
+SYSTYPE="eureka"

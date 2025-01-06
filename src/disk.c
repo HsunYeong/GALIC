@@ -37,7 +37,7 @@ void disk_get_fresh_coordinate(double *pos)
 	}
       while(fabs(R - Rold) / R > 1e-7);
 
-      R *= All.Disk_H;
+      R *= All.Disk_R;
 
       phi = gsl_rng_uniform(random_generator) * M_PI * 2;
 
@@ -58,11 +58,11 @@ double disk_get_density(double *pos)
       double R = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
       double z = pos[2];
 
-      double rho = All.Disk_Mass / (4 * M_PI * All.Disk_H * All.Disk_H * All.Disk_Z0) *
-	exp(-R / All.Disk_H) * pow(2 / (exp(z / All.Disk_Z0) + exp(-z / All.Disk_Z0)), 2);
+      double rho = All.Disk_Mass / (4 * M_PI * All.Disk_R * All.Disk_R * All.Disk_Z0) *
+	exp(-R / All.Disk_R) * pow(2 / (exp(z / All.Disk_Z0) + exp(-z / All.Disk_Z0)), 2);
 
 		if ( fabs(rho) <  MIN_DENSITY) rho = 0;
-  
+
       return rho;
     }
   else
@@ -73,5 +73,5 @@ double disk_get_density(double *pos)
 
 double disk_get_mass_inside_radius(double R)
 {
-  return All.Disk_Mass * (1 - (1 + R / All.Disk_H) * exp(-R / All.Disk_H));
+  return All.Disk_Mass * (1 - (1 + R / All.Disk_R) * exp(-R / All.Disk_R));
 }

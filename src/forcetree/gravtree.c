@@ -104,7 +104,7 @@ void gravity_tree(void)
 
   if(Tree_NumPartImported != 0)
     terminate("Tree_NumPartImported=%d != 0", Tree_NumPartImported);
-  
+
   /* Create list of targets. We do this here to simplify the treatment of the two possible sources of points */
 
   TargetList = mymalloc("TargetList", (NumPart + Tree_NumPartImported) * sizeof(int));

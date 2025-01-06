@@ -90,6 +90,12 @@ double *EG_EgyResponseTLoc_delta[6];
 double *EG_EgyResponsePLoc_delta[6];
 double *EG_EgyResponseQLoc_delta[6];
 
+//profile table
+double *ProfileTable_r;
+double *DensTable;
+double *EnMassTable;
+double *PoteTable;
+
 
 
 #ifdef VER_1_1

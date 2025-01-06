@@ -1,0 +1,115 @@
+------------------------------------------------------------------------
+GALIC -- modifed version
+------------------------------------------------------------------------
+
+  This is the modified version of the GALIC code (http://www.h-its.org/tap/galic)
+  --------------------------------------------------------------------
+  Copyright (c) 2014-2017 by Denis Yurin and Volker Springel
+
+  Heidelberg Institute for Theoretical Studies (HITS)
+  Schloss-Wolfsbrunnenweg 35, 69118 Heidelberg, Germany,
+
+  Heidelberg University, Zentrum fuer Astronomy, ARI
+  Moenchhofstrasse 12-14, 69120 Heidelberg, Germany
+
+  GALIC is an implementation of a new iterative method to construct
+  steady state composite halo-disk-bulge galaxy models with prescribed
+  density distribution and velocity anisotropy.
+
+  The method is described in full in the paper
+
+  Yurin D., Springel, V., 2014, MNRAS, in press
+  (see also the preprin at http://arxiv.org/abs/1402.1623)
+
+  Users of the code are kindly asked to cite the paper if they make
+  use of the code. The code is released "as is", without any guarantees
+  or warrantees.
+
+------------
+Dependencies
+------------
+
+  GalIC needs the following non-standard libraries for compilation:
+
+  mpi  - the ‘Message Passing Interface’ (http://www-unix.mcs.anl.gov/mpi/mpich)
+
+  gsl  - the GNU scientiﬁc library. This open-source package can be
+         obtained at http://www.gnu.org/software/gsl
+
+  hdf5 - the ‘Hierarchical Data Format’ (available at
+         http://hdf.ncsa.uiuc.edu/HDF5).  This library is optional and
+         only needed when one wants to read or write snapshot ﬁles in
+         HDF format.
+
+-----------
+Compilation
+-----------
+
+  1) Setup the system type in "Makefile", and add the according system type in "Makefile.systype"
+  2) Edit "Config.sh" and setup the compilation options
+  3) Compile the code via "make", and it should generate the executable "GalIC"
+
+-----
+Usage
+-----
+
+  To start GalIC, run the executable with a command of the form
+
+      mpirun -np 12 ./GalIC disk-heating.param
+
+  This example will run GalIC using 12 MPI processors, and with
+  parameters as speciﬁed in the parameter file
+  "disk-heating.param", which is passed as an argument to the
+  program.  The number of MPI ranks that is used is arbitrary, and it
+  is also possible to run the code in serial.
+
+-------------
+Parameterfile
+-------------
+
+  The parameterfile is a simple text file that defines in each line a
+  parameter-value pair. The sequence of the parameters is arbitrary,
+  and comment lines are also allowed. The code will complain about
+  missing or duplicate parameters. "disk-heating.param" serves as an example
+
+-------------
+Profile Table
+-------------
+
+   The modified GALIC can construct the halo via spherically symmetric halo profile
+   An example is "profile_example.txt", which is the profile of m_{22}=0.4, M_h=7.0e10 Msun FDM halo.
+
+   Qauntities needed:
+   1) radius (in kpc)
+   2) density (in g/cm^3)
+   3) enclosed mass (in Msun)
+   4) potential (in cm^2/s^2)
+
+   The radial bin should be log-scaled, and the total number of bin should be specified in "disk-heating.param"
+
+
+
+------
+Output
+------
+
+  As GalIC progresses, it regularly dumps "snaphot files", which can
+  be used as initial conditions files. The latest snapshot represents
+  the last optimization state, and represents the best initial
+  conditions produced by the code thus far. GalIC supports the three
+  file formats of the GADGET code for its output snapshot files
+  (i.e. the venerable 'type1' format, the slightly improved 'type2'
+  format, and an HDF5 format).  The default file format in the example
+  parametersfiles is the plain type1 format. A documentation of this
+  file format can be found in
+  http://www.mpa-garching.mpg.de/gadget/users-guide.pdf
+
+-------
+Restart
+-------
+
+  The general usage of GALIC is in fact quite similar to the GADGET
+  code. However, restarts are currently not yet supported.
+
+
+

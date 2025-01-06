@@ -34,7 +34,7 @@ static long long ntot_type_all[6];	/**< contains the global number of particles 
 
 
 void output_density_field(int iter) {
-	
+
 	int nbin;
 	double *dout;
 
@@ -46,7 +46,7 @@ void output_density_field(int iter) {
 	int type, lev;
 
 	for(type = 1; type <= 3; type++) {
-		
+
 		if(type == 1 && All.Halo_N == 0) continue;
 
 		if(type == 2 && All.Disk_N == 0) continue;
@@ -57,7 +57,7 @@ void output_density_field(int iter) {
 		sprintf(buf, "%s/densfield_%d_%03d.dat", All.OutputDir, type, num);
 		FILE *fd = fopen(buf, "w");
 		fwrite(&DG_MaxLevel, sizeof(int), 1, fd);
-		
+
 		for(lev = DG_MaxLevel; lev >= 0; lev--) {
 			int nbin = (1 << lev);
 			fwrite(&nbin, sizeof(int), 1, fd);
@@ -87,42 +87,42 @@ void output_density_field(int iter) {
 
 		/************************************/
 
-		
-		
-		
+
+
+
 		/* Density grid coordinates */
 #ifdef VER_1_1_GNUPLOT_LOG
 		{
-			
+
 			FILE *gp = popen("gnuplot", "w");
 			fprintf(gp, "set term pngcairo size 1200, 1080 font 'Arial, 12' enhanced\n");
-			
+
 			char fn[4096];
 			sprintf(fn, "%s/sigma%i", All.OutputDir, type);
 			mkdir(fn, 0777);
 			sprintf(fn, "%s/sigma%03d.png", fn, iter);
 			fprintf(gp, "set output '%s'\n", fn);
-			
+
 			fprintf(gp, "set logscale xy\n");
 			fprintf(gp, "set grid\n");
-			fprintf(gp, "set xtics 2\n"); 
+			fprintf(gp, "set xtics 2\n");
 			fprintf(gp, "set ytics 2\n");
-				
-			fprintf(gp, "plot [0.125:%g][1:768] '-' u 1:2:3:4 w p pt 7 ps var lc var t 'v0', '-' u 1:2:3:4 w p pt 7 ps var lc var t 'vs'\n", type==2 ? 64.0 : 64.0*1024 ); 
-			
+
+			fprintf(gp, "plot [0.125:%g][1:768] '-' u 1:2:3:4 w p pt 7 ps var lc var t 'v0', '-' u 1:2:3:4 w p pt 7 ps var lc var t 'vs'\n", type==2 ? 64.0 : 64.0*1024 );
+
 			int i, k, j;
 
-			
+
 			for(k = 0; k < DG_Nbin; k++) {
 				double z = DG_Rmin * ( pow(DG_Fac, k + 0.5) - 1.0 );
 				for(j = 0; j < DG_Nbin; j++) {
 					double R = DG_Rmin * ( pow(DG_Fac, j + 0.5) - 1.0 );
 					i = k * DG_Nbin + j; /* z,r */
-					double r = sqrt(R*R + z*z); 
+					double r = sqrt(R*R + z*z);
 					double pos[] = {R, 0, z};
 
 					double m0 = DGs_MassTarget[type][ STACKOFFSET(DG_MaxLevel, 0, 0)+ i ];
-					
+
 					double mvr20 = EGs_EgyTarget_r[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvt20 = EGs_EgyTarget_t[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvq20 = EGs_EgyTarget_q[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
@@ -132,77 +132,77 @@ void output_density_field(int iter) {
 					double sigmat0 = 0<m0 && 0<mvt20 ? sqrt(mvt20/m0) : 0;
 					double sigmaq0 = 0<m0 && 0<mvq20 ? sqrt(mvq20/m0) : 0;
 					double sigmap0 = 0<m0 && 0<mvp20 ? sqrt(mvp20/m0) : 0;
-					
+
 					fprintf(gp, "%g %g 0.5 0\n", r,  sigmar0);
 					//fprintf(gp, "%g %g 0.5 0\n", r,  sigmat0);
 					//fprintf(gp, "%g %g 0.5 6\n", r,  sigmap0);
 					//fprintf(gp, "%g %g 0.5 7\n", r,  sigmaq0);
-					
-					
+
+
 				}
-				
+
 			}
-			
-			fprintf(gp, "e\n");			
-			
-			
-			
+
+			fprintf(gp, "e\n");
+
+
+
 			/*
 			for(k = 0; k < DG_Nbin; k++) {
 				double z = DG_Rmin * ( pow(DG_Fac, k + 0.5) - 1.0 );
 				for(j = 0; j < DG_Nbin; j++) {
 					double R = DG_Rmin * ( pow(DG_Fac, j + 0.5) - 1.0 );
 					i = k * DG_Nbin + j; // z,r
-					double r = sqrt(R*R + z*z); 
+					double r = sqrt(R*R + z*z);
 					double pos[] = {R, 0, z};
 
-			
+
 					double m = EGs_MassResponse[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvr2 = EGs_EgyResponse_r[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvt2 = EGs_EgyResponse_t[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvq2 = EGs_EgyResponse_q[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
-					double mvp2 = EGs_EgyResponse_p[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];	
-					
+					double mvp2 = EGs_EgyResponse_p[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
+
 					double sigmar = 0<m && 0<mvr2 ? sqrt(mvr2/m) : 0;
 					double sigmat = 0<m && 0<mvt2 ? sqrt(mvt2/m) : 0;
 					double sigmaq = 0<m && 0<mvq2 ? sqrt(mvq2/m) : 0;
 					double sigmap = 0<m && 0<mvp2 ? sqrt(mvp2/m) : 0;
-					
+
 					fprintf(gp, "%g %g 0.5 0\n", r,  sigmar);
 					fprintf(gp, "%g %g 0.5 0\n", r,  sigmat);
 					fprintf(gp, "%g %g 0.5 0\n", r,  sigmap);
 					fprintf(gp, "%g %g 0.5 0\n", r,  sigmaq);
-					
-					
+
+
 				}
-				
+
 			}
-			
+
 			fprintf(gp, "e\n");
-			
+
 			*/
-			
+
 			for(k = 0; k < DG_Nbin; k++) {
 				double z = DG_Rmin * ( pow(DG_Fac, k + 0.5) - 1.0 );
 				for(j = 0; j < DG_Nbin; j++) {
 					double R = DG_Rmin * ( pow(DG_Fac, j + 0.5) - 1.0 );
 					i = k * DG_Nbin + j; /* z,r */
-					double r = sqrt(R*R + z*z); 
+					double r = sqrt(R*R + z*z);
 					double pos[] = {R, 0, z};
-					
-	
-		
-					
+
+
+
+
 #ifdef VER_1_1
-					
+
 					double ms = DGs_MassResponse[type][ STACKOFFSET(DG_MaxLevel, 0, 0)+ i ];
-	
+
 					double mvr2s = EGs_EgyResponseRS[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvt2s = EGs_EgyResponseTS[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvq2s = EGs_EgyResponseQS[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 					double mvp2s = EGs_EgyResponsePS[type][ STACKOFFSET(EG_MaxLevel, 0, 0)+ i ];
 
-					
+
 					double sigmars = 0<ms && 0<mvr2s ? sqrt(mvr2s/ms) : 0;
 					double sigmats = 0<ms && 0<mvt2s ? sqrt(mvt2s/ms) : 0;
 					double sigmaqs = 0<ms && 0<mvq2s ? sqrt(mvq2s/ms) : 0;
@@ -215,76 +215,76 @@ void output_density_field(int iter) {
 					fprintf(gp, "%g %g 0.3 3\n", r,  sigmaqs);
 #endif
 				}
-				
+
 			}
 
-			
-			fprintf(gp, "e\n");			
-			
-			
-			
+
+			fprintf(gp, "e\n");
+
+
+
 			fclose(gp);
-			
+
 		}
 		/*************************************/
-		
-		
+
+
 		{
-			
+
 			FILE *gp = popen("gnuplot", "w");
 			fprintf(gp, "set term pngcairo size 1200, 1080 font 'Arial, 12' enhanced\n");
-			
+
 			char fn[4096];
 			sprintf(fn, "%s/dm%i", All.OutputDir, type);
 			mkdir(fn, 0777);
 			sprintf(fn, "%s/dm%03d.png", fn, iter);
 			fprintf(gp, "set output '%s'\n", fn);
-			
+
 			fprintf(gp, "set logscale x\n");
 			fprintf(gp, "set grid\n");
-			fprintf(gp, "set xtics 2\n"); 
+			fprintf(gp, "set xtics 2\n");
 			fprintf(gp, "set xzeroaxis lt -1 lc 0\n");
 			//fprintf(gp, "set ytics 2\n");
-				
-			fprintf(gp, "plot [0.125:%g][-0.00005:+0.00005] '-' u 1:2:3:4 w p pt 7 ps var lc var t 'ms-m0'\n", type==2 ? 64.0 : 64.0*1024 ); 
-			
+
+			fprintf(gp, "plot [0.125:%g][-0.00005:+0.00005] '-' u 1:2:3:4 w p pt 7 ps var lc var t 'ms-m0'\n", type==2 ? 64.0 : 64.0*1024 );
+
 			int i, k, j;
 
-			
+
 			for(k = 0; k < DG_Nbin; k++) {
 				double z = DG_Rmin * ( pow(DG_Fac, k + 0.5) - 1.0 );
 				for(j = 0; j < DG_Nbin; j++) {
 					double R = DG_Rmin * ( pow(DG_Fac, j + 0.5) - 1.0 );
 					i = k * DG_Nbin + j; /* z,r */
-					double r = sqrt(R*R + z*z); 
+					double r = sqrt(R*R + z*z);
 					double pos[] = {R, 0, z};
 
 					double m0 = DGs_MassTarget[type][ STACKOFFSET(DG_MaxLevel, 0, 0)+ i ];
 					double ms = DGs_MassResponse[type][ STACKOFFSET(DG_MaxLevel, 0, 0)+ i ];
-					
+
 					fprintf(gp, "%g %g 0.25 1\n", r,  (ms-m0)/MType[type]);
-					
+
 				}
-				
+
 			}
-			
-			fprintf(gp, "e\n");			
-			
+
+			fprintf(gp, "e\n");
+
 			fclose(gp);
-			
+
 		}
 		/*************************************/
-		
-		
-		
+
+
+
 #endif
 
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		/* Density grid coordinates */
 		{
 			double *tmpR = mymalloc("tmpR", DG_Ngrid * sizeof(double));
@@ -296,13 +296,13 @@ void output_density_field(int iter) {
 				double z = DG_Rmin * 0.5 * (pow(DG_Fac, k) + pow(DG_Fac, k + 1) - 2.0);
 
 				for(j = 0; j < DG_Nbin; j++) {
-					
+
 					double R = DG_Rmin * 0.5 * (pow(DG_Fac, j) + pow(DG_Fac, j + 1) - 2.0);
 					i = k * DG_Nbin + j; /* z,r */
 					tmpR[i] = R;
 					tmpz[i] = z;
 				}
-				
+
 			}
 
 			nbin = DG_Nbin;
@@ -318,7 +318,7 @@ void output_density_field(int iter) {
 
 		/*************************************/
 
-		
+
 		/* Energy grid coordinates */
 		{
 			double *tmpR = mymalloc("tmpR", EG_Ngrid * sizeof(double));
@@ -392,7 +392,7 @@ void output_density_field(int iter) {
 
 		/*************************************/
 
-		
+
 		/* target energy, variable resolution */
 		nbin = (1 << EG_MaxLevel);
 		dout = mymalloc("dout", nbin * nbin * sizeof(double));
@@ -412,7 +412,7 @@ void output_density_field(int iter) {
 
 		/*************************************/
 
-		
+
 		/* target energy, variable resolution */
 		nbin = (1 << EG_MaxLevel);
 		dout = mymalloc("dout", nbin * nbin * sizeof(double));
@@ -432,7 +432,7 @@ void output_density_field(int iter) {
 
 		/*************************************/
 
-		
+
 		/* target energy, variable resolution */
 		nbin = (1 << EG_MaxLevel);
 		dout = mymalloc("dout", nbin * nbin * sizeof(double));
@@ -539,11 +539,11 @@ void output_particles(int iter)
 
 }
 
-/*! \brief This function fills the write buffer with particle data. 
+/*! \brief This function fills the write buffer with particle data.
  *
  *  New output blocks can in principle be added here.
  *
- *  \param blocknr ID of the output block (i.e. position, velocities...) 
+ *  \param blocknr ID of the output block (i.e. position, velocities...)
  *  \param startindex pointer containing the offset in the write buffer
  *  \param pc nuber of particle to be put in the buffer
  *  \param type particle type
@@ -621,7 +621,7 @@ void fill_write_buffer(enum iofields blocknr, int *startindex, int pc, int type)
 /*! \brief This function tells the size in bytes of one data entry in each of the blocks
  *  defined for the output file.
  *
- *  \param blocknr ID of the output block (i.e. position, velocities...) 
+ *  \param blocknr ID of the output block (i.e. position, velocities...)
  *  \param mode used to distinguish whether the function is called in input
  *         mode (mode > 0) or in output mode (mode = 0). The size of one data
  *         entry may vary depending on the mode
@@ -666,7 +666,7 @@ int get_bytes_per_blockelement(enum iofields blocknr, int mode)
  *
  *  Used only if output in HDF5 format is enabled
  *
- *  \param blocknr ID of the output block (i.e. position, velocities...) 
+ *  \param blocknr ID of the output block (i.e. position, velocities...)
  *  \return typekey, a flag that indicates the type of the data entry
  */
 int get_datatype_in_block(enum iofields blocknr)
@@ -691,12 +691,12 @@ int get_datatype_in_block(enum iofields blocknr)
   return typekey;
 }
 
-/*! \brief This function determines the number of elements composing one data entry 
+/*! \brief This function determines the number of elements composing one data entry
  *  in each of the blocks defined for the output file.
  *
  *  Used only if output in HDF5 format is enabled
- *  
- *  \param blocknr ID of the output block (i.e. position, velocities...) 
+ *
+ *  \param blocknr ID of the output block (i.e. position, velocities...)
  *  \return number of elements of one data entry
  */
 int get_values_per_blockelement(enum iofields blocknr)
@@ -730,8 +730,8 @@ int get_values_per_blockelement(enum iofields blocknr)
  *  types that are present in the block in the typelist array.
  *
  *  \param blocknr ID of the output block (i.e. position, velocities...)
- *  \param typelist array that contains the number of particles of each type in the block 
- *  \return the total number of particles in the block 
+ *  \param typelist array that contains the number of particles of each type in the block
+ *  \return the total number of particles in the block
  */
 int get_particles_in_block(enum iofields blocknr, int *typelist)
 {
@@ -785,7 +785,7 @@ int get_particles_in_block(enum iofields blocknr, int *typelist)
 }
 
 /*! \brief Check if a block is present in a file
- *  
+ *
  *  This function tells whether a block in the input/output file is present
  *  or not. Because the blocks processed in the two cases are different, the
  *  mode is indicated with the flag write (1=write, 0=read).
@@ -883,7 +883,7 @@ void get_dataset_name(enum iofields blocknr, char *buf)
 }
 
 /*! \brief Actually write the snapshot file to the disk
- *  
+ *
  *  This function writes a snapshot file containing the data from processors
  *  'writeTask' to 'lastTask'. 'writeTask' is the one that actually writes.
  *  Each snapshot file contains a header first, then particle positions,
@@ -896,7 +896,7 @@ void get_dataset_name(enum iofields blocknr, char *buf)
  *  and compile-time flags.
  *
  *  \param fname string containing the file name
- *  \param writeTask the rank of the task in a writing group that which is responsible 
+ *  \param writeTask the rank of the task in a writing group that which is responsible
  *         for the output operations
  *  \param lastTask the rank of the last task in a writing group
  *  \param subbox_flag if greater than 0 instructs the code to output only a subset
@@ -1176,7 +1176,7 @@ void write_file(char *fname, int writeTask, int lastTask)
 				      dims[0] = pc;
 				      dims[1] = get_values_per_blockelement(blocknr);
 				      hdf5_dataspace_memory = H5Screate_simple(rank, dims, NULL);
-				    
+
 				      H5Dwrite(hdf5_dataset, hdf5_datatype, hdf5_dataspace_memory,
 					       hdf5_dataspace_in_file, H5P_DEFAULT, CommBuffer);
 
@@ -1235,8 +1235,8 @@ void write_file(char *fname, int writeTask, int lastTask)
 
 #ifdef HAVE_HDF5
 /*! \brief Write the fields contained in the header group of the HDF5 snapshot file
- *  
- *  This function stores the fields of the structure io_header as attributes belonging 
+ *
+ *  This function stores the fields of the structure io_header as attributes belonging
  *  to the header group of the HDF5 file.
  *
  *  \param handle contains a reference to the header group
@@ -1361,12 +1361,12 @@ void write_header_attributes_in_hdf5(hid_t handle)
 }
 
 /*! \brief A simple error handler for HDF5
- * 
+ *
  *  This function terminates the run or if write errors are tolerated, calls
  *  the write_error() function to print information about the error and returns
  *  a positive integer to allow the repetition of the write operation
  *  (see also the HDF5 documentation)
- *  
+ *
  *  \param unused the parameter is not used, but it is necessary for compatibility
  *         with the HDF5 library
  *  \return 1 if the write error is tolerated, otherwise the run is terminated
@@ -1419,8 +1419,8 @@ void distribute_file(int nfiles, int firstfile, int firsttask, int lasttask, int
 
 
 
-/*! \brief  A wrapper for the fwrite() function 
- * 
+/*! \brief  A wrapper for the fwrite() function
+ *
  *  This catches I/O errors occuring for fwrite(). In this case we
  *  better stop. If stream is null, no attempt at writing is done.
  *
@@ -1448,8 +1448,8 @@ size_t my_fwrite(void *ptr, size_t size, size_t nmemb, FILE * stream)
   return nwritten;
 }
 
-/*! \brief  A wrapper for the fread() function 
- * 
+/*! \brief  A wrapper for the fread() function
+ *
  *  This catches I/O errors occuring for fread(). In this case we
  *  better stop. If stream is null, no attempt at readingis done.
  *
@@ -1508,8 +1508,8 @@ void mpi_printf(const char *fmt, ...)
 }
 
 
-/*! \brief Opens the requested file name and returns the file descriptor. 
- *  
+/*! \brief Opens the requested file name and returns the file descriptor.
+ *
  *  If opening fails, an error is printed and the file descriptor is
  *  null.
  *

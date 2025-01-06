@@ -146,7 +146,7 @@ void domain_exchange(void)
 
   for(i = 0; i < NTask; i++)
     count_recv[i] = toGet[i];
- 
+
   offset_recv[0] = NumPart;
 
   for(i = 1; i < NTask; i++)

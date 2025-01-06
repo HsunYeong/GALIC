@@ -163,7 +163,7 @@ extern int FlagNyt;
 
 typedef int integertime;
 #define  TIMEBINS        29
-#define  TIMEBASE        (1<<TIMEBINS)	
+#define  TIMEBASE        (1<<TIMEBINS)
 
 #ifndef  GRAVCOSTLEVELS
 #define  GRAVCOSTLEVELS      6
@@ -189,7 +189,7 @@ typedef int integertime;
 typedef unsigned long long peanokey;
 
 /** For Peano-Hilbert order. Note: Maximum is 10 to fit in 32-bit integer ! */
-#define  BITS_PER_DIMENSION 21	
+#define  BITS_PER_DIMENSION 21
 #define  PEANOCELLS (((peanokey)1)<<(3*BITS_PER_DIMENSION))
 
 
@@ -198,7 +198,7 @@ typedef unsigned long long peanokey;
 #define  MAX_DOUBLE_NUMBER 1e306
 #define  MIN_DOUBLE_NUMBER 1e-306
 
-#define MIN_DENSITY 1e-25 
+#define MIN_DENSITY 1e-25
 
 
 #ifdef DOUBLEPRECISION
@@ -405,6 +405,11 @@ extern double Sdisp_q[6];
 extern double Srelfac[6];
 extern double Srelfac_count[6];
 
+//profile table
+extern double *ProfileTable_r;
+extern double *DensTable;
+extern double *EnMassTable;
+extern double *PoteTable;
 
 
 
@@ -503,7 +508,7 @@ extern gsl_rng *random_generator;	/**< the random number generator used */
 
 /** Buffer to hold indices of neighbours retrieved by the neighbour
   search routines. Usually of size Numpart. */
-extern int *Ngblist;		
+extern int *Ngblist;
 
 extern FILE *FdMemory;
 
@@ -643,9 +648,10 @@ extern struct global_data_all_processes
   double V200;
   double M200;
   double R200;
-  
+  double R347;
+ 
   double MD, MB, MBH, JD;
-
+  double DispLimitRatio;
   double Halo_Mass;
   double Halo_A;
   double Halo_Rs;
@@ -653,7 +659,7 @@ extern struct global_data_all_processes
 
   double Disk_Mass;
   double Disk_Z0;
-  double Disk_H;
+  double Disk_R;
   double DiskHeight;
 
   double Bulge_Mass;
@@ -664,11 +670,25 @@ extern struct global_data_all_processes
 
   double Lambda;
 
+  double h;
+  double m_22;
+  double PeakDens;
+  double CoreRadius;
+  double CoreEnMass;
+  double Rho_0;
+  double Rs;
   /* Number of particles in the different components */
   int  Disk_N;
   int  Halo_N;
   int  Bulge_N;
   int  BH_N;
+  /* profile table parameter*/
+  int HaloUseTable;
+  char ProfileTableFile[MAXLEN_PATH];
+  int Nbin_Profile;
+  double r_min;
+  double r_max;
+  double r_ratio;
 
   double Rmax;
 
@@ -714,6 +734,7 @@ extern struct global_data_all_processes
 
   double HaloStretch;
   double BulgeStretch;
+
 
   double TotGravCost;
 
@@ -850,7 +871,7 @@ extern struct particle_data
   MyFloat  Potential;
 
   MyDouble Tint;
-  
+
   MyDouble Vesc;         /* escape velocity of particles */
   MyDouble vr2, vt2, vp2, vq2;
   MyDouble vr2_target, vt2_target, vp2_target, vq2_target;
@@ -942,7 +963,7 @@ extern struct gravdata_in
 }
  *GravDataIn,
 /**< Holds particle data to be exported to other processors */
- *GravDataGet;			
+ *GravDataGet;
 /**< Holds particle data imported from other processors */
 
 
@@ -954,10 +975,10 @@ extern struct gravdata_out
 /** Holds the partial results computed for imported particles. Note:
     We use GravDataResult = GravDataGet, such that the result replaces
     the imported data */
- *GravDataResult,		
+ *GravDataResult,
 /** Holds partial results received from other processors. This will
     overwrite the GravDataIn array */
- *GravDataOut;			
+ *GravDataOut;
 
 
 
@@ -973,13 +994,13 @@ extern int *Exportindex;
 
 /** Array of NTask size of the offset into the send array where the
     objects to be sent to the specified task starts. */
-extern int *Send_offset, 
+extern int *Send_offset,
 /** Array of NTask size of the number of objects to send to the
     tasks. */
-*Send_count, 
+*Send_count,
 /** Array of NTask size of the number of objects to receive from the
     tasks. */
-*Recv_count, 
+*Recv_count,
 /** Array of NTask size of the offset into the receive array where the
     objects from the specified task starts. */
 *Recv_offset;
@@ -1078,13 +1099,13 @@ extern struct NODE
           not need to be opened. This means that it traverses the 8
           subnodes of a node in a breadth-first fashion, and then goes
           to father->sibling. */
-      int sibling;		
+      int sibling;
       /** The next node in case the current node needs to be
           opened. Applying nextnode repeatedly results in a pure
           depth-first traversal of the tree. */
-      int nextnode;		
+      int nextnode;
       /** The parent node of the node. (Is -1 for the root node.) */
-      int father;		
+      int father;
     }
     d;
   }
@@ -1093,17 +1114,17 @@ extern struct NODE
   float center[3];           /**< geometrical center of node */
   float len;                 /**< sidelength of treenode */
 }
- *Nodes;			
+ *Nodes;
 
 
 /** Gives next node in tree walk for the "particle" nodes. Entries 0
     -- MaxPart-1 are the real particles, and the "pseudoparticles" are
     indexed by the node number-MaxNodes. */
-extern int *Nextnode;		
+extern int *Nextnode;
 /** Gives previous node in tree walk for the leaf (particle)
     nodes. Entries 0 -- MaxPart-1 are the real particles, and the
     "pseudoparticles" are indexed by the node number-MaxNodes. */
-extern int *Father;		
+extern int *Father;
 
 
 

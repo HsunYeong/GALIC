@@ -24,14 +24,14 @@ void init(void)
 
   random_generator = gsl_rng_alloc(gsl_rng_ranlxd1);
 
-  gsl_rng_set(random_generator, 42 + ThisTask);	/* start-up seed */
+  gsl_rng_set(random_generator, 100 + ThisTask);	/* start-up seed */
 
   set_softenings();
 
   All.TopNodeAllocFactor = 0.1;
   All.TreeAllocFactor = 0.8;
 
-  
+
 #ifdef DEBUG_ENABLE_FPU_EXCEPTIONS
   enable_core_dumps_and_fpu_exceptions();
 #endif
@@ -60,7 +60,7 @@ void set_units(void)
 
   /* convert some physical input parameters to internal units */
 
-  All.Hubble = HUBBLE * All.UnitTime_in_s;
+  All.Hubble = HUBBLE * All.UnitTime_in_s * All.h ;
 
   if(ThisTask == 0)
     {

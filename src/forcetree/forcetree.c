@@ -35,7 +35,7 @@ static unsigned char *level_list;
  */
 
 /*! This function is a driver routine for constructing the gravitational oct-tree.
- * 
+ *
  *  \return number of local+top nodes of the constructed tree
  */
 int force_treebuild(int npart /*!< number of particles on local task */,
@@ -53,7 +53,7 @@ int force_treebuild(int npart /*!< number of particles on local task */,
       if(flag < 0)
 	{
       /* tree construction was not successful and needs to be repeated */
-      
+
 	  if(flag_single != -2)
 	    {
 	      myfree(Tree_Points);
@@ -130,13 +130,13 @@ int force_treebuild(int npart /*!< number of particles on local task */,
  *  [Tree_MaxPart+Tree_MaxNodes+NTopleaves... Tree_MaxPart+Tree_MaxNodes+NTopleaves+Tree_NumPartImported-1]   references imported points \n
  *
  *  the pointer `Nodes' is shifted such that Nodes[Tree_MaxPart] gives the first tree node (i.e. the root node).
- * 
+ *
  *  \return if successful returns the number of local+top nodes of the constructed tree \n
  *          -1 if the number of allocated tree nodes is too small \n
  *          -2 if the number of allocated tree nodes is even too small to fit the top nodes \n
  *          -3 if a particle out of domain box condition was encountered
  */
-int force_treebuild_construct(int npart /*!< number of particles on local task */, 
+int force_treebuild_construct(int npart /*!< number of particles on local task */,
                               int optimized_domain_mapping /*!< specifies if mapping of the top-level nodes to processors may be readjusted */)
 {
   int i, j, no;
@@ -184,7 +184,7 @@ int force_treebuild_construct(int npart /*!< number of particles on local task *
   level_list = (unsigned char *) mymalloc_movable(&level_list, "level_list", npart * sizeof(int));
   Tree_IntPos_list = (unsigned long long *) mymalloc_movable(&Tree_IntPos_list, "Tree_IntPos_list", 3 * npart * sizeof(unsigned long long));
 
-  
+
 
   for(i = 0, posp = Tree_Pos_list; i < npart; i++)
     {
@@ -193,7 +193,7 @@ int force_treebuild_construct(int npart /*!< number of particles on local task *
     }
 
   /* now we determine for each point the insertion top-level node, and the task on which this lies */
- 
+
   for(i = 0, posp = Tree_Pos_list, intposp = Tree_IntPos_list; i < npart; i++)
     {
       unsigned long long xxb = force_double_to_int(((*posp++ - DomainCorner[0]) * DomainInverseLen) + 1.0);
@@ -361,14 +361,14 @@ int force_treebuild_construct(int npart /*!< number of particles on local task *
 }
 
 
-/*! inserts a single particle into the gravitational tree 
+/*! inserts a single particle into the gravitational tree
  *
  *  \return 0 if successful \n
  *          -1 if too few nodes have been allocated in the Nodes array
  */
-int force_treebuild_insert_single_point(int i /*!< index of particle */, 
-                                        unsigned long long *intpos /*!< integer representation of particle position */, 
-                                        int th /*!< target node */, 
+int force_treebuild_insert_single_point(int i /*!< index of particle */,
+                                        unsigned long long *intpos /*!< integer representation of particle position */,
+                                        int th /*!< target node */,
                                         unsigned char levels /*!< level of target node */)
 {
   int j, parent = -1;
@@ -401,7 +401,7 @@ int force_treebuild_insert_single_point(int i /*!< index of particle */,
 	    {
 	      /* seems like we're dealing with particles at identical (or extremely close)
 	       * locations. Shift subnode index to allow tree construction. Note: Multipole moments
-	       * of tree are still correct, but one should MAX_TREE_LEVEL large enough to have 
+	       * of tree are still correct, but one should MAX_TREE_LEVEL large enough to have
 	       *      DomainLen/2^MAX_TREE_LEEL  < gravitational softening length
 	       */
 	      for(j = 0; j < 8; j++)
@@ -503,15 +503,15 @@ int force_treebuild_insert_single_point(int i /*!< index of particle */,
  *  associate the pseudo-particles of other CPUs with tree-nodes at a given
  *  level in the tree, even when the particle population is so sparse that
  *  some of these nodes are actually empty.
- * 
+ *
  * \return 0 if successful \n
  *         -1 if number of allocated tree nodes is too small to fit the newly created nodes
 */
-int force_create_empty_nodes(int no /*!< parent node for which daughter nodes shall be created */, 
-                             int topnode /*!< index of the parent node in the #TopNodes array */, 
-                             int bits /*!< 2^bits is the number of nodes per dimension at the level of the daughter nodes */, 
-                             int x /*!< position of the parent node in the x direction, falls in the range [0,2^(bits-1) - 1] */, 
-                             int y /*!< position of the parent node in the y direction, falls in the range [0,2^(bits-1) - 1] */, 
+int force_create_empty_nodes(int no /*!< parent node for which daughter nodes shall be created */,
+                             int topnode /*!< index of the parent node in the #TopNodes array */,
+                             int bits /*!< 2^bits is the number of nodes per dimension at the level of the daughter nodes */,
+                             int x /*!< position of the parent node in the x direction, falls in the range [0,2^(bits-1) - 1] */,
+                             int y /*!< position of the parent node in the y direction, falls in the range [0,2^(bits-1) - 1] */,
                              int z /*!< position of the parent node in the z direction, falls in the range [0,2^(bits-1) - 1] */)
 {
   int i, j, k, n, sub, count;
@@ -589,8 +589,8 @@ void force_insert_pseudo_particles(void)
  *  stored in the Nodes[] structure in the sequence of this tree-walk.
  */
 void force_update_node_recursive(int no /*!< node for which the moments shall be found */,
-                                 int sib /*!< sibling of node no */, 
-                                 int father /*!< father node of node no */, 
+                                 int sib /*!< sibling of node no */,
+                                 int father /*!< father node of node no */,
                                  int *last /*!< last node for which this function was called, or -1 when called for root node */)
 {
   int j, jj, p, pp, nextsib, suns[8];
@@ -890,7 +890,7 @@ void force_treeupdate_toplevel(int no /*!< node to be updated */,
  *  the number of required nodes is of order 0.7*maxpart, but if this is insufficient,
  *  the code will try to allocated more space.
  */
-void force_treeallocate(int maxpart /*!< number of particles on the current task */, 
+void force_treeallocate(int maxpart /*!< number of particles on the current task */,
                         int maxindex /*!< the Nodes pointer will be shifted such that the index of the first element is maxindex */)
 {
   if(Nodes)

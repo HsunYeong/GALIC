@@ -144,20 +144,40 @@ void read_parameter_file(char *fname)
       addr[nt] = &All.InnermostBinEnclosedMassFraction;
       id[nt++] = REAL;
 
-      strcpy(tag[nt], "CC");
-      addr[nt] = &All.Halo_C;
+      strcpy(tag[nt], "h");
+      addr[nt] = &All.h;
       id[nt++] = REAL;
 
-      strcpy(tag[nt], "V200");
-      addr[nt] = &All.V200;
+      strcpy(tag[nt], "m_22");
+      addr[nt] = &All.m_22;
       id[nt++] = REAL;
 
-      strcpy(tag[nt], "LAMBDA");
-      addr[nt] = &All.Lambda;
+      strcpy(tag[nt], "HaloUseTable");
+      addr[nt] = &All.HaloUseTable;
+      id[nt++] = INT;
+
+      strcpy(tag[nt], "ProfileTableFile");
+      addr[nt] = All.ProfileTableFile;
+      id[nt++] = STRING;
+
+      strcpy(tag[nt], "Nbin_Profile");
+      addr[nt] = &All.Nbin_Profile;
+      id[nt++] = INT;
+
+      strcpy(tag[nt], "Disk_Mass");
+      addr[nt] = &All.Disk_Mass;
       id[nt++] = REAL;
 
-      strcpy(tag[nt], "MD");
-      addr[nt] = &All.MD;
+      strcpy(tag[nt], "Disk_R");
+      addr[nt] = &All.Disk_R;
+      id[nt++] = REAL;
+
+      strcpy(tag[nt], "DispLimitRatio");
+      addr[nt] = &All.DispLimitRatio;
+      id[nt++] = REAL;
+
+      strcpy(tag[nt], "DiskHeight");
+      addr[nt] = &All.DiskHeight;
       id[nt++] = REAL;
 
       strcpy(tag[nt], "MBH");
@@ -166,14 +186,6 @@ void read_parameter_file(char *fname)
 
       strcpy(tag[nt], "MB");
       addr[nt] = &All.MB;
-      id[nt++] = REAL;
-
-      strcpy(tag[nt], "JD");
-      addr[nt] = &All.JD;
-      id[nt++] = REAL;
-
-      strcpy(tag[nt], "DiskHeight");
-      addr[nt] = &All.DiskHeight;
       id[nt++] = REAL;
 
       strcpy(tag[nt], "BulgeSize");
@@ -308,9 +320,8 @@ void read_parameter_file(char *fname)
       addr[nt] = &All.GravityConstantInternal;
       id[nt++] = REAL;
 
-		
-		
-		strcpy(tag[nt], "HaloValueRsFac");
+      #ifdef VER_1_1
+      strcpy(tag[nt], "HaloValueRsFac");
       addr[nt] = &fac_value_rs[1];
       id[nt++] = REAL;
 
@@ -321,13 +332,13 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "HaloValueQsFac");
       addr[nt] = &fac_value_qs[1];
       id[nt++] = REAL;
-		
-		strcpy(tag[nt], "HaloValuePsFac");
+
+      strcpy(tag[nt], "HaloValuePsFac");
       addr[nt] = &fac_value_ps[1];
       id[nt++] = REAL;
-		
-		
-		strcpy(tag[nt], "DiskValueRsFac");
+
+
+      strcpy(tag[nt], "DiskValueRsFac");
       addr[nt] = &fac_value_rs[2];
       id[nt++] = REAL;
 
@@ -338,13 +349,13 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "DiskValueQsFac");
       addr[nt] = &fac_value_qs[2];
       id[nt++] = REAL;
-		
-		strcpy(tag[nt], "DiskValuePsFac");
+
+      strcpy(tag[nt], "DiskValuePsFac");
       addr[nt] = &fac_value_ps[2];
       id[nt++] = REAL;
-		
-		
-		strcpy(tag[nt], "BulgeValueRsFac");
+
+
+      strcpy(tag[nt], "BulgeValueRsFac");
       addr[nt] = &fac_value_rs[3];
       id[nt++] = REAL;
 
@@ -355,13 +366,13 @@ void read_parameter_file(char *fname)
       strcpy(tag[nt], "BulgeValueQsFac");
       addr[nt] = &fac_value_qs[3];
       id[nt++] = REAL;
-		
-		strcpy(tag[nt], "BulgeValuePsFac");
+
+      strcpy(tag[nt], "BulgeValuePsFac");
       addr[nt] = &fac_value_ps[3];
       id[nt++] = REAL;
+      #endif
 
-		
-		
+
       if((fd = fopen(fname, "r")))
 	{
 	  sprintf(buf, "%s%s", fname, "-usedvalues");
@@ -419,7 +430,7 @@ void read_parameter_file(char *fname)
 		    {
 		      fprintf(stdout, "Error in file %s:   Tag '%s' not allowed or multiply defined.\n",
 			      fname, buf1);
-		      errorFlag = 1;
+//		      errorFlag = 1;
 		    }
 		}
 	      fclose(fd);
@@ -473,13 +484,13 @@ void read_parameter_file(char *fname)
   MPI_Bcast(&DG_MaxLevel, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
   MPI_Bcast(&FG_Nbin, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
   MPI_Bcast(&EG_MaxLevel, sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
-  
-  
+ 
+  #ifdef VER_1_1
 	MPI_Bcast(fac_value_rs, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
 	MPI_Bcast(fac_value_ts, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
 	MPI_Bcast(fac_value_qs, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
 	MPI_Bcast(fac_value_ps, 6*sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
-
+  #endif
   for(pnum = 0; All.NumFilesWrittenInParallel > (1 << pnum); pnum++);
 
   if(All.NumFilesWrittenInParallel != (1 << pnum))
@@ -494,3 +505,5 @@ void read_parameter_file(char *fname)
       endrun();
     }
 }
+
+

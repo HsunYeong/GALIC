@@ -21,7 +21,7 @@ static double jdisk_int(double x, void *param)
 {
   double vc2, Sigma0, vc, y;
 
-  if(x > 1.0e-10 * All.Halo_A)
+  if(x > ProfileTable_r[0])
     vc2 = All.G * (halo_get_mass_inside_radius(x) + bulge_get_mass_inside_radius(x)) / x;
   else
     vc2 = 0;
@@ -29,8 +29,8 @@ static double jdisk_int(double x, void *param)
   if(vc2 < 0)
     terminate("vc2 < 0");
 
-  Sigma0 = All.Disk_Mass / (2 * M_PI * All.Disk_H * All.Disk_H);
-  y = x / (2 * All.Disk_H);
+  Sigma0 = All.Disk_Mass / (2 * M_PI * All.Disk_R * All.Disk_R);
+  y = x / (2 * All.Disk_R);
 
   if(y > 1e-4)
     vc2 +=
@@ -39,7 +39,7 @@ static double jdisk_int(double x, void *param)
 
   vc = sqrt(vc2);
 
-  return pow(x / All.Disk_H, 2) * vc * exp(-x / All.Disk_H);
+  return pow(x / All.Disk_R, 2) * vc * exp(-x / All.Disk_R);
 }
 
 
@@ -53,55 +53,53 @@ static double gc_int(double x, void *param)
 
 void structure_determination(void)
 {
-  double jhalo, jdisk, jd;
-  double hnew, dh;
-
-  /* total galaxy mass */
-  All.M200 = pow(All.V200, 3) / (10 * All.G * All.Hubble);
-
-  /* virial radius of galaxy */
-  All.R200 = All.V200 / (10 * All.Hubble);
-
-  All.LowerDispLimit = pow(0.01 * All.V200, 2);
-
-  /* halo scale radius */
-  All.Halo_Rs = All.R200 / All.Halo_C;
-
-  /* determine the masses of all components */
-  All.Disk_Mass = All.MD * All.M200;
+  if (All.HaloUseTable != 0)
+  {
+    load_profile_table();
+    All.PeakDens = DensTable[0];
+    All.CoreRadius = pow(0.0019/All.m_22/All.m_22/All.PeakDens,0.25)*3.085678e21/All.UnitLength_in_cm;
+    All.CoreEnMass = soliton_enclosed_mass(0.8*All.CoreRadius);
+    All.Halo_Mass = halo_get_mass_inside_radius(1.0e+4);
+  }
+  else
+  {
+    All.Halo_Mass = 7.0;
+  }
+  All.M200 = All.Halo_Mass + All.Disk_Mass;
+  All.MD = All.Disk_Mass/All.M200;
   All.Bulge_Mass = All.MB * All.M200;
+  All.R347 = pow(All.G*All.Halo_Mass/100./All.Hubble/All.Hubble*(347./200.), 1./3.);
+  All.R200 = pow(All.G*All.M200/100./All.Hubble/All.Hubble, 1./3.);
+  All.V200 = pow(All.G*All.M200/All.R200, 0.5);
+  All.LowerDispLimit = pow(All.DispLimitRatio * All.V200, 2);
+  All.Halo_C = 8;
+  All.Halo_Rs = All.R347 / All.Halo_C;
+  All.Halo_A = All.Halo_Rs * sqrt(2 * (log(1 + All.Halo_C) - All.Halo_C / (1 + All.Halo_C)));
 
   All.BH_Mass = All.MBH * All.M200;
   if(All.MBH > 0)
     All.BH_N = 1;
   else
     All.BH_N = 0;
-
-  All.Halo_Mass = All.M200 - All.Disk_Mass - All.Bulge_Mass - All.BH_Mass;
-
-  /* set the scale factor of the hernquist halo */
-  All.Halo_A = All.Halo_Rs * sqrt(2 * (log(1 + All.Halo_C) - All.Halo_C / (1 + All.Halo_C)));
-
-
-  jhalo = All.Lambda * sqrt(All.G) * pow(All.M200, 1.5) * sqrt(2 * All.R200 / fc(All.Halo_C));
-  jdisk = All.JD * jhalo;
-
-  double halo_spinfactor =
-    1.5 * All.Lambda * sqrt(2 * All.Halo_C / fc(All.Halo_C)) * pow(log(1 + All.Halo_C) -
-								   All.Halo_C / (1 + All.Halo_C),
-								   1.5) / structure_gc(All.Halo_C);
-
+  All.Disk_Z0 = All.DiskHeight * All.Disk_R;
   mpi_printf("\nStructural parameters:\n");
+  if (All.HaloUseTable)
+  {
+    mpi_printf("PeakDens        = %g\n", All.PeakDens);
+    mpi_printf("CoreRadius      = %g\n", All.CoreRadius);
+    mpi_printf("CoreEnMass      = %g\n", All.CoreEnMass);
+  }
+  else
+  {
+    mpi_printf("A (halo)        = %g\n", All.Halo_A);
+  }
   mpi_printf("R200            = %g\n", All.R200);
+  mpi_printf("V200            = %g\n", All.V200);
   mpi_printf("M200            = %g  (this is the total mass)\n", All.M200);
-  mpi_printf("A (halo)        = %g\n", All.Halo_A);
-  mpi_printf("halo_spinfactor = %g\n", halo_spinfactor);
+  mpi_printf("Halo_Mass       = %g\n", All.Halo_Mass);
+  mpi_printf("Disk_Mass       = %g\n", All.Disk_Mass);
 
-  /* first guess for disk scale length */
-  All.Disk_H = sqrt(2.0) / 2.0 * All.Lambda / fc(All.Halo_C) * All.R200;
-  All.Disk_Z0 = All.DiskHeight * All.Disk_H;	/* sets disk thickness */
-
-  All.Bulge_A = All.BulgeSize * All.Halo_A;	/* this will be used if no disk is present */
+  All.Bulge_A = All.BulgeSize * All.Halo_A;	// this will be used if no disk is present
 
   MType[1] = All.Halo_Mass;
   MType[2] = All.Disk_Mass;
@@ -111,35 +109,10 @@ void structure_determination(void)
   NType[2] = All.Disk_N;
   NType[3] = All.Bulge_N;
 
-
-  if(All.Disk_Mass > 0)
-    {
-      do
-	{
-	  jd = structure_disk_angmomentum();	/* computes disk momentum */
-
-	  hnew = jdisk / jd * All.Disk_H;
-
-	  dh = hnew - All.Disk_H;
-
-	  if(fabs(dh) > 0.5 * All.Disk_H)
-	    dh = 0.5 * All.Disk_H * dh / fabs(dh);
-	  else
-	    dh = dh * 0.1;
-
-	  All.Disk_H = All.Disk_H + dh;
-
-	  /* mpi_printf("Jd/J=%g   hnew: %g  \n", jd / jhalo, All.Disk_H);
-	   */
-
-	  All.Disk_Z0 = All.DiskHeight * All.Disk_H;	/* sets disk thickness */
-	}
-      while(fabs(dh) / All.Disk_H > 1e-5);
-    }
-
-  mpi_printf("H  (disk)       = %g\n", All.Disk_H);
+  mpi_printf("R  (disk)       = %g\n", All.Disk_R);
   mpi_printf("Z0 (disk)       = %g\n", All.Disk_Z0);
-  mpi_printf("A (bulge)       = %g\n", All.Bulge_A);
+  mpi_printf("MD (disk)       = %g\n", All.MD);
+//  mpi_printf("A (bulge)       = %g\n", All.Bulge_A);
 }
 
 
@@ -151,7 +124,7 @@ double structure_disk_angmomentum(void)
 
   double result, abserr;
 
-  gsl_integration_qag(&F, 0, dmin(30 * All.Disk_H, All.R200),
+  gsl_integration_qag(&F, 0, dmin(30 * All.Disk_R, All.R200),
 		      0, 1.0e-8, WORKSIZE, GSL_INTEG_GAUSS41, workspace, &result, &abserr);
 
   result *= All.Disk_Mass;
@@ -175,4 +148,56 @@ double structure_gc(double c)
   gsl_integration_workspace_free(workspace);
 
   return result;
+}
+
+void load_profile_table(void)
+{
+  int STR_SIZE = 1024;
+  int counter, k, i;
+  FILE *input_table;
+  char buff[STR_SIZE];
+  double radius, dens, enmass, pot;
+  ProfileTable_r   = mymalloc("ProfileTable_r"  , sizeof(double)*All.Nbin_Profile);
+  DensTable     = mymalloc("DensTable"    , sizeof(double)*All.Nbin_Profile);
+  EnMassTable   = mymalloc("EnMassTable"  , sizeof(double)*All.Nbin_Profile);
+  PoteTable     = mymalloc("PoteTable"    , sizeof(double)*All.Nbin_Profile);
+
+  //Read Table
+  counter = 0;
+  input_table = fopen(All.ProfileTableFile,"r");
+  if (!input_table)
+  {
+    mpi_printf("File %s cannot be opened! Exit!\n", All.ProfileTableFile);
+    exit(1);
+  }
+  else
+    mpi_printf("Loading %s for reading profile table succeed!\n", All.ProfileTableFile);
+  while (!feof(input_table))
+  {
+    fgets(buff, STR_SIZE, input_table);
+    if (buff==NULL||buff[0]=='\0')
+      break;
+    else if (buff[0]!='#')
+    {
+      sscanf(buff, "%lf %lf %lf %lf", &radius, &dens, &enmass, &pot);
+      ProfileTable_r[counter] = radius;
+      DensTable[counter] = dens*pow(All.UnitLength_in_cm, 3)/All.UnitMass_in_g;
+      EnMassTable[counter] = enmass/1e+10;
+      PoteTable[counter] = pot/All.UnitVelocity_in_cm_per_s/All.UnitVelocity_in_cm_per_s;
+
+      counter ++;
+    }
+    memset(buff, '\0', STR_SIZE);
+  }
+  fclose(input_table);
+  All.r_min = ProfileTable_r[0];
+  All.r_max = ProfileTable_r[All.Nbin_Profile-1];
+  All.r_ratio = pow((All.r_max/All.r_min), 1.0/(All.Nbin_Profile-1.0));
+}
+void free_profile_table(void)
+{
+  myfree(ProfileTable_r);
+  myfree(DensTable);
+  myfree(EnMassTable);
+  myfree(PoteTable);
 }

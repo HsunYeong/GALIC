@@ -84,9 +84,9 @@ void enable_core_dumps_and_fpu_exceptions(void)
   rlim.rlim_cur = RLIM_INFINITY;
   setrlimit(RLIMIT_CORE, &rlim);
 
-  /* MPICH catches the signales SIGSEGV, SIGBUS, and SIGFPE....                                                                   
-   * The following statements reset things to the default handlers,                                                               
-   * which will generate a core file.                                                                                             
+  /* MPICH catches the signales SIGSEGV, SIGBUS, and SIGFPE....
+   * The following statements reset things to the default handlers,
+   * which will generate a core file.
    */
   signal(SIGSEGV, SIG_DFL);
   signal(SIGBUS, SIG_DFL);

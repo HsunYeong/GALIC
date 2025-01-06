@@ -74,7 +74,7 @@ double parallel_sort_comm(void *base, size_t nmemb, size_t size, int (*compar) (
   /* do a serial sort of the local data up front */
   serial_sort((char *) base, nmemb, size, compar);
 
-  /* we create a communicator that contains just those tasks with nmemb > 0. This makes 
+  /* we create a communicator that contains just those tasks with nmemb > 0. This makes
    *  it easier to deal with CPUs that do not hold any data.
    */
   if(nmemb)
