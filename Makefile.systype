@@ -38,3 +38,4 @@
 #SYSTYPE="Centos5-intel"
 #SYSTYPE="Centos5-Gnu"
 SYSTYPE="eureka"
+#SYSTYPE="spock"

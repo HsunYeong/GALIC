@@ -208,8 +208,6 @@ OPT      +=  -DIMPOSE_PINNING
 endif
 
 # modules for eureka
-# module load intel/compiler
-# module load mvapich2/intel/64/1.6-qlc
 
 ifeq ($(SYSTYPE),"eureka")
 CC       =   mpicc
@@ -220,14 +218,39 @@ OPTIMIZE +=  -openmp
 else
 OPTIMIZE +=  -Wno-unknown-pragmas
 endif
-GSL_INCL =  -I/software/gsl/default/include
-GSL_LIBS =  -L/software/gsl/default/lib
+GSL_INCL = -I/software/gsl/default/include
+GSL_LIBS = -L/software/gsl/default/lib
 FFTW_INCL=
 FFTW_LIBS=
 MPICHLIB = -L/software/openmpi/default/lib -lmpi
 MATHLIB  = -limf -lm
 HDF5INCL = -I/software/hdf5/default/include -DH5_USE_16_API
 HDF5LIB  = -L/software/hdf5/default/lib -lhdf5 -lz
+#OPT      +=  -DNOCALLSOFSYSTEM
+#OPT      +=  -DIMPOSE_PINNING
+endif
+
+
+# modules for spock
+
+ifeq ($(SYSTYPE),"spock")
+CC       =   mpicc
+CXX      =   mpicxx
+OPTIMIZE =   -O3 -g -Wall -m64
+ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
+OPTIMIZE +=  -openmp
+else
+OPTIMIZE +=  -Wno-unknown-pragmas -diag-disable 3180 -diag-disable 10441
+endif
+GSL_INCL = -I/software/gsl/2.6-intel-2023.1.0/include
+GSL_LIBS = -L/software/gsl/2.6-intel-2023.1.0/lib
+GMPLIB =
+FFTW_INCL=
+FFTW_LIBS=
+MPICHLIB = -L/software/openmpi/4.1.5-ucx_mt-intel-2023.1.0/lib -lmpi
+MATHLIB  = -limf -lm
+HDF5INCL = -I/software/hdf5/1.10.6-intel-2023.1.0/include -DH5_USE_16_API
+HDF5LIB  = -L/software/hdf5/1.10.6-intel-2023.1.0/lib -lhdf5 -lz
 #OPT      +=  -DNOCALLSOFSYSTEM
 #OPT      +=  -DIMPOSE_PINNING
 endif
@@ -313,4 +336,4 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCL) $(MAKEFILES)
 
 $(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
- 
+

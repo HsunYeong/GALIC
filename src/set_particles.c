@@ -305,7 +305,6 @@ void initialize_particles(void) {
 	output_toomre_Q();
 	output_rotcurve();
         output_rotcurve_avg();
-        output_acc();
 }
 
 int permutation_compare(const void *a, const void *b) {
@@ -404,7 +403,6 @@ void output_rotcurve(void)
 
       sprintf(buf, "%s/rotcurve.txt", All.OutputDir);
       FILE *fd = fopen(buf, "w");
-      fprintf(fd, "#%d\n", n);
       fprintf(fd, "#R              vc_tot         vc_halo        vc_diski       vc_bulge       v_phi\n");
 
       double vc2_tot, vc2_dm, vc2_disk, vc2_bulge, vphi;
@@ -462,7 +460,7 @@ void output_rotcurve_avg(void)
 
       sprintf(buf, "%s/rotcurve_avg.txt", All.OutputDir);
       FILE *fd = fopen(buf, "w");
-      fprintf(fd, "average rotation speed and velocity dispersion through z direction");
+      fprintf(fd, "average rotation speed and velocity dispersion through z direction\n");
       fprintf(fd, "#R              v_phi          sigma_R\n");
 
       for(j = 0; j < n; j++)
@@ -491,41 +489,3 @@ void output_rotcurve_avg(void)
     }
 }
 
-void output_acc(void)
-{
-  if(ThisTask == 0)
-    {
-      double pos[3], R, acc[3], pos2[3], acc2[3], pos3[3], acc3[3];
-      char buf[1000];
-      int j, n = 500;
-
-      double Rmax = All.R200;
-
-      sprintf(buf, "%s/acc.txt", All.OutputDir);
-      FILE *fd = fopen(buf, "w");
-      fprintf(fd, "#%d\n", n);
-
-      for(j = 0; j < n; j++)
-        {
-          R = (Rmax / n) * (j + 0.5);
-
-          pos[0] = R;
-          pos[1] = 0;
-          pos[2] = 0;
-          forcegrid_get_acceleration(pos, acc);
-          pos2[0] = R;
-          pos2[1] = 0;
-          pos2[2] = 0.01;
-          forcegrid_get_acceleration(pos2, acc2);
-          pos3[0] = R;
-          pos3[1] = 0;
-          pos3[2] = 0.05;
-          forcegrid_get_acceleration(pos3, acc3);
-
-
-
-          fprintf(fd, "%g  %g  %g  %g\n", R, acc[2], acc2[2], acc3[2]);
-        }
-      fclose(fd);
-    }
-}
